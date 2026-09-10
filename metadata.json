@@ -1,0 +1,8 @@
+{
+  "name": "SAT Performance Tracker & Analytics",
+  "description": "Comprehensive SAT practice test score tracking, domain breakdowns, superscores, and performance analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

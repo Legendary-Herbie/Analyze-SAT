@@ -14,6 +14,15 @@ export interface DomainScoreData {
   score?: number | null;
 }
 
+export interface ModuleRoutingData {
+  rwModule2Difficulty?: 'hard' | 'easy' | null;
+  mathModule2Difficulty?: 'hard' | 'easy' | null;
+  rwModule1Correct?: number | null;
+  rwModule2Correct?: number | null;
+  mathModule1Correct?: number | null;
+  mathModule2Correct?: number | null;
+}
+
 export interface SATTest {
   id: string;
   name: string;
@@ -24,6 +33,7 @@ export interface SATTest {
   math: number;
   notes?: string;
   domains: Record<string, DomainScoreData>;
+  moduleRouting?: ModuleRoutingData;
   createdAt?: number;
 }
 
@@ -37,3 +47,20 @@ export interface DomainTrend {
   scoresHistory: number[];
   assessment: 'Major strength' | 'Strong' | 'Developing' | 'Priority area' | 'No score';
 }
+
+export interface OfficialSATDate {
+  id: string;
+  date: string; // YYYY-MM-DD
+  name: string;
+  season: string;
+}
+
+export interface StudyMilestone {
+  id: string;
+  title: string;
+  targetDate: string;
+  completed: boolean;
+  type: 'test' | 'review' | 'rest';
+  notes?: string;
+}
+

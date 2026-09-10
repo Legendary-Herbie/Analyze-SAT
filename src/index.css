@@ -15,29 +15,40 @@
   --red: #ad4949;
 }
 
+.dark {
+  --bg: #0b1120;
+  --card: #151e2e;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --line: #1e293b;
+  --navy: #3b5a82;
+  --navy2: #52759e;
+  --soft: #1c2738;
+  --green: #10b981;
+  --red: #f87171;
+}
+
 body {
   margin: 0;
   background-color: var(--bg);
   color: var(--text);
   font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Form input utilities */
 .form-input {
-  @apply w-full border border-[#e5e9f0] rounded-xl px-3 py-2.5 bg-white text-[#182235] text-sm outline-none transition-all;
+  @apply w-full border border-[#e5e9f0] dark:border-slate-700 rounded-xl px-3 py-2.5 bg-white dark:bg-slate-800 text-[#182235] dark:text-slate-100 text-sm outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500;
 }
 .form-input:focus {
-  @apply border-[#b6c1cf] ring-2 ring-[#374e6c]/10;
+  @apply border-[#b6c1cf] dark:border-slate-500 ring-2 ring-[#374e6c]/10 dark:ring-sky-500/20;
 }
 .form-input-sm {
-  @apply w-full border border-[#e5e9f0] rounded-lg px-2 py-2 bg-white text-[#182235] text-xs outline-none transition-all text-center;
+  @apply w-full border border-[#e5e9f0] dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 text-[#182235] dark:text-slate-100 text-xs outline-none transition-all text-center placeholder:text-slate-400 dark:placeholder:text-slate-500;
 }
 .form-input-sm:focus {
-  @apply border-[#b6c1cf] ring-2 ring-[#374e6c]/10;
-}
-.form-input-sm::placeholder {
-  @apply text-[#c8d0db];
+  @apply border-[#b6c1cf] dark:border-slate-500 ring-2 ring-[#374e6c]/10 dark:ring-sky-500/20;
 }
 
 /* Custom scrollbars */
@@ -48,10 +59,48 @@ body {
 ::-webkit-scrollbar-track {
   background: #f1f4f8;
 }
+.dark ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 9999px;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Print styles for Printable PDF Progress Report */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #182235 !important;
+    font-size: 11pt;
+  }
+  .no-print,
+  button,
+  header,
+  dialog,
+  .print-hidden {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+}
+
