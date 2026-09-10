@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAT Performance Tracker</title>
+<style>
+:root{
+  --bg:#f6f8fb; --card:#fff; --text:#182235; --muted:#6f7b90; --line:#e5e9f0;
+  --navy:#2c4160; --navy2:#405978; --soft:#eef2f7; --green:#18745a; --red:#ad4949;
+  --shadow:0 12px 32px rgba(25,37,56,.055); --radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1250px;margin:0 auto;padding:26px 20px 56px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--navy);display:grid;place-items:center;color:#fff;font-weight:850;font-size:13px}
+h1,h2,h3,p{margin:0}
+.brand h1{font-size:20px;letter-spacing:-.02em}
+.brand p{font-size:12px;color:var(--muted);margin-top:3px}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:750;font-size:13px}
+.btn.primary{background:var(--navy);color:#fff}
+.btn.secondary{background:#fff;border:1px solid var(--line);color:var(--text)}
+.btn.danger{background:#fff;border:1px solid #f0d7d7;color:var(--red)}
+.hero{border-radius:22px;padding:27px;background:linear-gradient(125deg,#243955,#3a5373);color:#fff;box-shadow:var(--shadow);margin-bottom:20px}
+.heroTop{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.kicker{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;opacity:.72}
+.mainScore{font-size:54px;font-weight:850;line-height:1;margin-top:7px;letter-spacing:-.045em}
+.meta{font-size:13px;opacity:.72;margin-top:7px}
+.badge{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:750}
+.heroStats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:22px}
+.heroStat{background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:15px}
+.heroStat span{display:block;font-size:11px;opacity:.7;margin-bottom:6px}
+.heroStat strong{font-size:20px}
+.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.78fr);gap:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.section{padding:21px}
+.sectionHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:17px}
+.sectionHead h2{font-size:17px;letter-spacing:-.01em}
+.sectionHead p{font-size:12px;color:var(--muted);margin-top:4px}
+.tabs{display:flex;gap:7px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:white;border-radius:999px;padding:7px 10px;font-size:11px;color:var(--muted);font-weight:800}
+.tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.chartGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.chartCard{border:1px solid var(--line);border-radius:15px;padding:15px;min-height:250px}
+.chartTitle{font-size:13px;font-weight:800}
+.chartSub{font-size:11px;color:var(--muted);margin-top:3px}
+.chartWrap{height:190px;margin-top:12px;position:relative}
+canvas{width:100%;height:100%;display:block}
+.domainList{display:grid;gap:12px}
+.domain{border:1px solid var(--line);border-radius:15px;padding:17px}
+.domainHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.domainName{font-size:14px;font-weight:800}
+.domainSub{font-size:11px;color:var(--muted);margin-top:4px}
+.percent{font-size:25px;font-weight:850}.percent small{font-size:11px;color:var(--muted)}
+.scoreLine{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;font-size:12px;color:#516177}
+.scoreLine b{color:var(--text)}
+.track{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:9px}
+.segment{height:14px;border-radius:5px;background:#eef1f5}.segment.fill{background:var(--navy2)}
+.labels{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--muted)}
+.side{display:grid;gap:20px;align-content:start}
+.insight{padding:17px;border-bottom:1px solid var(--line)}
+.insight:last-child{border-bottom:0}
+.insightLabel{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:850}
+.insightValue{font-size:17px;font-weight:850;margin-top:5px}
+.insightDetail{font-size:11px;color:var(--muted);line-height:1.45;margin-top:4px}
+.historyRow{display:grid;grid-template-columns:1.55fr .62fr .62fr .62fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font-size:12px}
+.historyRow:last-child{border-bottom:0}
+.historyHeader{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:850;padding-top:0}
+.smallBtn{padding:6px 8px;font-size:10px;border-radius:8px}
+.empty{padding:28px 12px;text-align:center;color:var(--muted);font-size:12px}
+.note{font-size:10px;color:var(--muted);text-align:center;margin-top:18px}
+dialog{border:0;border-radius:20px;padding:0;width:min(920px,calc(100% - 28px));box-shadow:0 26px 90px rgba(0,0,0,.22)}
+dialog::backdrop{background:rgba(18,27,40,.45)}
+.modal{padding:23px}
+.modalHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px}
+.modalHead h2{font-size:20px}
+.modalHead p{font-size:12px;color:var(--muted);margin-top:5px}
+.close{border:0;background:var(--soft);border-radius:9px;width:34px;height:34px}
+.formGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;color:var(--muted);font-weight:800}
+.optional{font-weight:600;opacity:.72}
+input,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:white;color:var(--text);outline:none}
+input:focus,select:focus{border-color:#b6c1cf;box-shadow:0 0 0 3px rgba(55,78,108,.08)}
+.domainEntryBox{margin-top:20px;border-top:1px solid var(--line);padding-top:17px}
+.domainEntryHeader{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:11px}
+.domainEntryHeader h3{font-size:14px}
+.domainEntryHeader p{font-size:11px;color:var(--muted);margin-top:3px}
+.domainFormRow{display:grid;grid-template-columns:1.7fr repeat(4,.68fr);gap:8px;align-items:end;padding:8px 0;border-bottom:1px solid #f0f2f5}
+.domainFormRow:last-child{border-bottom:0}
+.domainFormRow .name{font-size:11px;font-weight:800;padding-bottom:10px}
+.mini{font-size:9px;color:var(--muted);display:block;margin-bottom:4px}
+.modalActions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}
+.hint{font-size:10px;color:var(--muted);margin-top:7px}
+.hidden{display:none!important}
+@media(max-width:960px){
+  .grid{grid-template-columns:1fr}
+  .heroStats{grid-template-columns:1fr 1fr}
+}
+@media(max-width:700px){
+  .app{padding:16px 11px 40px}
+  .topbar{align-items:flex-start}
+  .chartGrid{grid-template-columns:1fr}
+  .formGrid{grid-template-columns:1fr 1fr}
+  .domainFormRow{grid-template-columns:1fr 1fr}
+  .domainFormRow .name{grid-column:1/-1;padding-bottom:0}
+  .historyRow{grid-template-columns:1.3fr .6fr .6fr}
+  .historyRow>:nth-child(4),.historyRow>:nth-child(5){display:none}
+}
+@media(max-width:480px){
+  .formGrid{grid-template-columns:1fr}
+  .heroStats{grid-template-columns:1fr 1fr}
+  .mainScore{font-size:46px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">SAT</div>
+      <div><h1>SAT Performance Tracker</h1><p>Score trends and domain-level analysis</p></div>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" id="exportBtn">Export</button>
+      <button class="btn primary" id="openForm">+ Add test</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="heroTop">
+      <div>
+        <div class="kicker">Latest score</div>
+        <div class="mainScore" id="latestTotal">—</div>
+        <div class="meta" id="latestMeta">Add your first practice test</div>
+      </div>
+      <div class="badge" id="scoreTrend">No trend yet</div>
+    </div>
+    <div class="heroStats">
+      <div class="heroStat"><span>Reading & Writing</span><strong id="latestRW">—</strong></div>
+      <div class="heroStat"><span>Math</span><strong id="latestMath">—</strong></div>
+      <div class="heroStat"><span>Personal best</span><strong id="personalBest">—</strong></div>
+      <div class="heroStat"><span>Average score</span><strong id="averageScore">—</strong></div>
+    </div>
+  </section>
+
+  <div class="grid">
+    <main>
+      <section class="card section" style="margin-bottom:20px">
+        <div class="sectionHead">
+          <div><h2>Score trends</h2><p>See whether your overall and section scores are moving in the right direction.</p></div>
+        </div>
+        <div class="chartGrid">
+          <div class="chartCard">
+            <div class="chartTitle">Overall SAT score</div>
+            <div class="chartSub">400–1600 scale</div>
+            <div class="chartWrap"><canvas id="totalChart"></canvas></div>
+          </div>
+          <div class="chartCard">
+            <div class="chartTitle">Section scores</div>
+            <div class="chartSub">Reading & Writing vs Math</div>
+            <div class="chartWrap"><canvas id="sectionChart"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card section">
+        <div class="sectionHead">
+          <div><h2>Domain analysis</h2><p>Domain details appear only when you enter them.</p></div>
+          <div class="tabs">
+            <button class="tab active" data-filter="all">All</button>
+            <button class="tab" data-filter="rw">R&W</button>
+            <button class="tab" data-filter="math">Math</button>
+          </div>
+        </div>
+        <div id="domainList" class="domainList"></div>
+      </section>
+    </main>
+
+    <aside class="side">
+      <section class="card">
+        <div class="section" style="padding-bottom:7px">
+          <div class="sectionHead" style="margin-bottom:0">
+            <div><h2>Performance insights</h2><p>Generated from the data you provide.</p></div>
+          </div>
+        </div>
+        <div id="insights"></div>
+      </section>
+
+      <section class="card section">
+        <div class="sectionHead">
+          <div><h2>Recent tests</h2><p>Your saved score history.</p></div>
+        </div>
+        <div id="history"></div>
+      </section>
+    </aside>
+  </div>
+  <div class="note">All data stays in this browser using local storage.</div>
+</div>
+
+<dialog id="testDialog">
+  <form class="modal" id="testForm">
+    <div class="modalHead">
+      <div><h2>Add practice test</h2><p>Only the three score fields are required. Everything else is optional.</p></div>
+      <button type="button" class="close" id="closeDialog">✕</button>
+    </div>
+
+    <div class="formGrid">
+      <div class="field">
+        <label>Test name <span class="optional">(optional)</span></label>
+        <input name="name" placeholder="Bluebook Practice Test 4">
+      </div>
+      <div class="field">
+        <label>Date <span class="optional">(optional)</span></label>
+        <input name="date" type="date">
+      </div>
+      <div class="field">
+        <label>Source <span class="optional">(optional)</span></label>
+        <select name="source">
+          <option value="">Not specified</option>
+          <option>Bluebook</option><option>DSAT UZ</option><option>Princeton Review</option>
+          <option>Khan Academy</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Total score</label>
+        <input name="total" type="number" min="400" max="1600" step="10" required placeholder="1400">
+      </div>
+      <div class="field">
+        <label>Reading & Writing</label>
+        <input name="rw" type="number" min="200" max="800" step="10" required placeholder="680">
+      </div>
+      <div class="field">
+        <label>Math</label>
+        <input name="math" type="number" min="200" max="800" step="10" required placeholder="720">
+      </div>
+    </div>
+
+    <div class="domainEntryBox">
+      <div class="domainEntryHeader">
+        <div>
+          <h3>Domain details <span class="optional">(all optional)</span></h3>
+          <p>You can enter only the fields your practice platform gives you.</p>
+        </div>
+        <button type="button" class="btn secondary" id="toggleDomains">Show domain fields</button>
+      </div>
+      <div id="domainFields" class="hidden">
+        <div id="domainFormRows"></div>
+        <div class="hint">If accuracy is blank but Correct and Total are entered, the percentage is calculated automatically.</div>
+      </div>
+    </div>
+
+    <div class="modalActions">
+      <button type="button" class="btn secondary" id="cancelBtn">Cancel</button>
+      <button type="submit" class="btn primary">Save test</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const DOMAIN_META=[
+  {id:'info',name:'Information and Ideas',section:'rw'},
+  {id:'craft',name:'Craft and Structure',section:'rw'},
+  {id:'expression',name:'Expression of Ideas',section:'rw'},
+  {id:'english',name:'Standard English Conventions',section:'rw'},
+  {id:'algebra',name:'Algebra',section:'math'},
+  {id:'advanced',name:'Advanced Math',section:'math'},
+  {id:'problem',name:'Problem-Solving and Data Analysis',section:'math'},
+  {id:'geometry',name:'Geometry and Trigonometry',section:'math'}
+];
+
+const SAMPLE=[
+  {id:crypto.randomUUID(),name:'Bluebook Practice Test 4',date:'2026-08-12',total:1380,rw:660,math:720,source:'Bluebook',domains:{
+    info:{correct:10,total:14,pct:71,score:635},craft:{correct:10,total:13,pct:77,score:655},
+    expression:{correct:8,total:12,pct:67,score:610},english:{correct:9,total:12,pct:75,score:650},
+    algebra:{correct:12,total:13,pct:92,score:755},advanced:{correct:9,total:13,pct:69,score:640},
+    problem:{correct:8,total:10,pct:80,score:690},geometry:{correct:6,total:8,pct:75,score:665}
+  }},
+  {id:crypto.randomUUID(),name:'Bluebook Practice Test 5',date:'2026-08-24',total:1430,rw:690,math:740,source:'Bluebook',domains:{
+    info:{correct:11,total:14,pct:79,score:671},craft:{correct:11,total:13,pct:85,score:710},
+    expression:{correct:9,total:12,pct:75,score:652},english:{correct:9,total:12,pct:75,score:650},
+    algebra:{correct:12,total:13,pct:92,score:760},advanced:{correct:10,total:13,pct:77,score:688},
+    problem:{correct:9,total:10,pct:90,score:735},geometry:{correct:6,total:8,pct:75,score:670}
+  }}
+];
+
+let tests=JSON.parse(localStorage.getItem('satTrackerTestsV2')||'null')||SAMPLE;
+let currentFilter='all';
+
+const $=id=>document.getElementById(id);
+const num=v=>v===''||v===null||v===undefined?null:Number(v);
+const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):null;
+function ordered(){return [...tests].sort((a,b)=>new Date(a.date||0)-new Date(b.date||0))}
+function latest(){return ordered().at(-1)}
+function save(){localStorage.setItem('satTrackerTestsV2',JSON.stringify(tests))}
+function assessment(score){if(score==null)return'';if(score>=730)return'Major strength';if(score>=680)return'Strong';if(score>=630)return'Developing';return'Priority area'}
+function trend(delta){if(delta>15)return['↑ Improving','var(--green)'];if(delta<-15)return['↓ Declining','var(--red)'];return['→ Stable','var(--muted)']}
+
+function renderHero(){
+  const l=latest();
+  if(!l){['latestTotal','latestRW','latestMath','personalBest','averageScore'].forEach(id=>$(id).textContent='—');return}
+  $('latestTotal').textContent=l.total;
+  $('latestRW').textContent=l.rw;
+  $('latestMath').textContent=l.math;
+  $('personalBest').textContent=Math.max(...tests.map(t=>t.total));
+  $('averageScore').textContent=avg(tests.map(t=>t.total));
+  const label=l.name||'Practice test';
+  const when=l.date?new Date(l.date+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'Date not specified';
+  $('latestMeta').textContent=`${label} • ${when}`;
+  const s=ordered();
+  if(s.length>1){
+    const d=l.total-s.at(-2).total;
+    $('scoreTrend').textContent=`${d>=0?'+':''}${d} from previous`;
+  }else $('scoreTrend').textContent='First test';
+}
+
+function roundedRect(ctx,x,y,w,h,r){
+  const rr=Math.min(r,w/2,h/2);
+  ctx.beginPath();ctx.roundRect(x,y,w,h,rr);ctx.fill();
+}
+
+function drawLineChart(canvas, series, minY, maxY){
+  const dpr=window.devicePixelRatio||1, rect=canvas.getBoundingClientRect();
+  canvas.width=Math.max(1,rect.width*dpr);canvas.height=Math.max(1,rect.height*dpr);
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  const w=rect.width,h=rect.height,p={l:38,r:12,t:12,b:30};
+  ctx.clearRect(0,0,w,h);
+  ctx.font='10px system-ui';ctx.fillStyle='#7b8799';ctx.textAlign='right';
+  const ticks=4;
+  for(let i=0;i<=ticks;i++){
+    const val=minY+(maxY-minY)*i/ticks;
+    const y=h-p.b-(h-p.t-p.b)*i/ticks;
+    ctx.strokeStyle='#edf0f4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(w-p.r,y);ctx.stroke();
+    ctx.fillText(Math.round(val),p.l-7,y+3);
+  }
+  const n=Math.max(...series.map(s=>s.data.length),1);
+  if(n===0)return;
+  const xPos=i=>n===1?(p.l+w-p.r)/2:p.l+(w-p.l-p.r)*(i/(n-1));
+  series.forEach((s,si)=>{
+    ctx.strokeStyle=si===0?'#304968':'#8796aa';ctx.fillStyle=ctx.strokeStyle;ctx.lineWidth=2;
+    ctx.beginPath();
+    s.data.forEach((v,i)=>{
+      if(v==null)return;
+      const x=xPos(i),y=h-p.b-(v-minY)/(maxY-minY)*(h-p.t-p.b);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });ctx.stroke();
+    s.data.forEach((v,i)=>{
+      if(v==null)return;
+      const x=xPos(i),y=h-p.b-(v-minY)/(maxY-minY)*(h-p.t-p.b);
+      ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+    });
+  });
+  const labels=ordered().map((t,i)=>t.name||`Test ${i+1}`);
+  ctx.fillStyle='#7b8799';ctx.textAlign='center';ctx.font='9px system-ui';
+  labels.forEach((lab,i)=>{
+    if(n>6 && i%Math.ceil(n/6)!==0 && i!==n-1)return;
+    ctx.fillText(lab.length>12?lab.slice(0,11)+'…':lab,xPos(i),h-9);
+  });
+}
+
+function renderCharts(){
+  const s=ordered();
+  drawLineChart($('totalChart'),[{data:s.map(t=>t.total)}],400,1600);
+  drawLineChart($('sectionChart'),[{data:s.map(t=>t.rw)},{data:s.map(t=>t.math)}],200,800);
+}
+
+function renderDomains(){
+  const l=latest(),box=$('domainList');box.innerHTML='';
+  if(!l){box.innerHTML='<div class="empty">Add a test to begin.</div>';return}
+  const domains=DOMAIN_META.filter(d=>currentFilter==='all'||d.section===currentFilter);
+  let shown=0;
+  domains.forEach(d=>{
+    const v=l.domains?.[d.id];
+    if(!v || [v.score,v.pct,v.correct,v.total].every(x=>x==null)){return}
+    shown++;
+    const histories=ordered().map(t=>t.domains?.[d.id]?.score).filter(x=>Number.isFinite(x));
+    const delta=histories.length>1?histories.at(-1)-histories.at(-2):0;
+    const [tr,clr]=trend(delta);
+    const filled=v.score==null?0:Math.max(0,Math.min(7,Math.round((v.score-200)/600*7)));
+    const pct=v.pct!=null?`${v.pct}<small> %</small>`:'—';
+    const raw=v.correct!=null&&v.total!=null?`${v.correct} / ${v.total} correct`:'Accuracy details not entered';
+    const score=v.score!=null?`Domain score: <b>${v.score}</b> · ${assessment(v.score)}`:'Domain score not entered';
+    const bars=v.score!=null?`<div class="track">${Array.from({length:7},(_,i)=>`<div class="segment ${i<filled?'fill':''}"></div>`).join('')}</div><div class="labels"><span>200</span><span>800</span></div>`:'';
+    const el=document.createElement('div');el.className='domain';
+    el.innerHTML=`<div class="domainHead"><div><div class="domainName">${d.name}</div><div class="domainSub">${raw}</div></div><div class="percent">${pct}</div></div>${bars}<div class="scoreLine"><span>${score}</span>${histories.length>1?`<span style="color:${clr};font-weight:800">${tr} (${delta>=0?'+':''}${delta})</span>`:''}</div>`;
+    box.appendChild(el);
+  });
+  if(!shown)box.innerHTML='<div class="empty">No domain details were entered for this test.</div>';
+}
+
+function renderInsights(){
+  const box=$('insights');
+  if(!tests.length){box.innerHTML='<div class="empty">No insights yet.</div>';return}
+  const m=DOMAIN_META.map(d=>{
+    const vals=ordered().map(t=>t.domains?.[d.id]?.score).filter(Number.isFinite);
+    return {d,latest:vals.at(-1),average:avg(vals),delta:vals.length>1?vals.at(-1)-vals.at(-2):null}
+  }).filter(x=>x.latest!=null);
+
+  if(!m.length){
+    box.innerHTML='<div class="insight"><div class="insightLabel">Score trend</div><div class="insightValue">Domain data not entered</div><div class="insightDetail">Your overall and section graphs still work. Add domain scores later if you want strength and weakness analysis.</div></div>';
+    return;
+  }
+  const strong=[...m].sort((a,b)=>b.latest-a.latest)[0];
+  const weak=[...m].sort((a,b)=>a.latest-b.latest)[0];
+  const improv=[...m].filter(x=>x.delta!=null).sort((a,b)=>b.delta-a.delta)[0];
+  box.innerHTML=`
+    <div class="insight"><div class="insightLabel">Strongest domain</div><div class="insightValue">${strong.d.name}</div><div class="insightDetail">Latest domain score ${strong.latest}; average ${strong.average}.</div></div>
+    <div class="insight"><div class="insightLabel">Priority weakness</div><div class="insightValue">${weak.d.name}</div><div class="insightDetail">Latest domain score ${weak.latest}. Repeated low scores matter more than a single test.</div></div>
+    ${improv?`<div class="insight"><div class="insightLabel">Largest recent gain</div><div class="insightValue">${improv.d.name}</div><div class="insightDetail">${improv.delta>=0?'+':''}${improv.delta} points from the previous recorded domain score.</div></div>`:''}`;
+}
+
+function renderHistory(){
+  const rows=[...ordered()].reverse().slice(0,8),box=$('history');
+  if(!rows.length){box.innerHTML='<div class="empty">No tests saved.</div>';return}
+  box.innerHTML=`<div class="historyRow historyHeader"><div>Test</div><div>Total</div><div>R&W</div><div>Math</div><div></div></div>`+
+  rows.map((t,i)=>`<div class="historyRow"><div><b>${t.name||'Practice test'}</b><div style="font-size:10px;color:var(--muted);margin-top:3px">${t.date?new Date(t.date+'T00:00:00').toLocaleDateString():'No date'}</div></div><div><b>${t.total}</b></div><div>${t.rw}</div><div>${t.math}</div><button class="btn danger smallBtn" onclick="deleteTest('${t.id}')">Delete</button></div>`).join('');
+}
+
+function render(){renderHero();renderCharts();renderDomains();renderInsights();renderHistory();save()}
+window.addEventListener('resize',()=>renderCharts());
+
+window.deleteTest=id=>{
+  if(confirm('Delete this practice test?')){tests=tests.filter(t=>t.id!==id);render()}
+};
+
+$('domainFormRows').innerHTML=DOMAIN_META.map(d=>`
+<div class="domainFormRow">
+  <div class="name">${d.name}</div>
+  <div><span class="mini">Correct</span><input name="${d.id}_correct" type="number" min="0"></div>
+  <div><span class="mini">Total</span><input name="${d.id}_total" type="number" min="1"></div>
+  <div><span class="mini">Accuracy %</span><input name="${d.id}_pct" type="number" min="0" max="100"></div>
+  <div><span class="mini">Domain score</span><input name="${d.id}_score" type="number" min="200" max="800"></div>
+</div>`).join('');
+
+$('openForm').onclick=()=>{
+  $('testForm').reset();
+  $('domainFields').classList.add('hidden');
+  $('toggleDomains').textContent='Show domain fields';
+  $('testDialog').showModal();
+};
+$('closeDialog').onclick=$('cancelBtn').onclick=()=>$('testDialog').close();
+$('toggleDomains').onclick=()=>{
+  const hidden=$('domainFields').classList.toggle('hidden');
+  $('toggleDomains').textContent=hidden?'Show domain fields':'Hide domain fields';
+};
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  currentFilter=b.dataset.filter;renderDomains();
+});
+
+$('testForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const fd=new FormData(e.target),domains={};
+  DOMAIN_META.forEach(d=>{
+    const correct=num(fd.get(`${d.id}_correct`)), total=num(fd.get(`${d.id}_total`));
+    let pct=num(fd.get(`${d.id}_pct`)), score=num(fd.get(`${d.id}_score`));
+    if(pct==null && correct!=null && total!=null && total>0)pct=Math.round(correct/total*100);
+    if([correct,total,pct,score].some(x=>x!=null))domains[d.id]={correct,total,pct,score};
+  });
+  const s=ordered();
+  const item={
+    id:crypto.randomUUID(),
+    name:(fd.get('name')||'').trim()||`Practice Test ${s.length+1}`,
+    date:fd.get('date')||'',
+    source:fd.get('source')||'',
+    total:Number(fd.get('total')),rw:Number(fd.get('rw')),math:Number(fd.get('math')),domains
+  };
+  tests.push(item);$('testDialog').close();render();
+});
+
+$('exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify(tests,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='sat-performance-data.json';a.click();URL.revokeObjectURL(url);
+};
+
+render();
+</script>
+</body>
+</html>

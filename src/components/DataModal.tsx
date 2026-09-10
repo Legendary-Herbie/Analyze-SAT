@@ -1,0 +1,179 @@
+import React, { useRef, useState } from 'react';
+import { X, Download, Upload, RotateCcw, Trash2, FileJson, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { useSAT } from '../context/SATContext';
+
+interface DataModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose }) => {
+  const { exportJSON, exportCSV, resetToSample, clearAllTests, importTests, tests } = useSAT();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+
+  const showToast = (type: 'success' | 'error', msg: string) => {
+    setToast({ type, msg });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        const result = importTests(data);
+        if (result.success) {
+          showToast('success', result.message);
+          onClose();
+        } else {
+          showToast('error', result.message);
+        }
+      } catch {
+        showToast('error', 'Failed to parse JSON. Make sure the file was exported from this app.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleReset = () => {
+    if (window.confirm('Reset to sample data? Your current data will be replaced.')) {
+      resetToSample();
+      showToast('success', 'Reset to sample data.');
+      onClose();
+    }
+  };
+
+  const handleClear = () => {
+    if (window.confirm('Clear ALL tests? This cannot be undone.')) {
+      clearAllTests();
+      showToast('success', 'All tests cleared.');
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop:bg-[#12182880] p-4" style={{ backgroundColor: 'rgba(18,24,40,0.45)' }}>
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-[0_26px_90px_rgba(0,0,0,0.22)] overflow-hidden">
+        <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-4 border-b border-[#e5e9f0]">
+          <div>
+            <h2 className="text-xl font-black text-[#182235]">Data & Export</h2>
+            <p className="text-xs text-[#6f7b90] mt-1">Manage your test data, import or export.</p>
+          </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-xl bg-[#eef2f7] hover:bg-[#e5e9f0] flex items-center justify-center transition-colors">
+            <X className="w-4 h-4 text-[#405978]" />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-3">
+          {/* Info bar */}
+          <div className="flex items-center justify-between px-4 py-3 bg-[#f6f8fb] border border-[#e5e9f0] rounded-xl">
+            <span className="text-xs text-[#6f7b90]">Stored tests</span>
+            <span className="text-sm font-extrabold text-[#2c4160]">{tests.length} record{tests.length !== 1 ? 's' : ''}</span>
+          </div>
+
+          <div className="space-y-2 pt-1">
+            <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#6f7b90] mb-1">Export</div>
+
+            <button
+              onClick={() => { exportJSON(); onClose(); }}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-[#e5e9f0] hover:border-[#c8d0db] hover:bg-[#f6f8fb] rounded-xl transition-colors text-left"
+            >
+              <div className="w-9 h-9 rounded-xl bg-[#eef2f7] flex items-center justify-center shrink-0">
+                <FileJson className="w-4 h-4 text-[#2c4160]" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-[#182235]">Export as JSON</div>
+                <div className="text-xs text-[#6f7b90]">Full data backup — can be re-imported</div>
+              </div>
+              <Download className="w-4 h-4 text-[#6f7b90] ml-auto" />
+            </button>
+
+            <button
+              onClick={() => { exportCSV(); onClose(); }}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-[#e5e9f0] hover:border-[#c8d0db] hover:bg-[#f6f8fb] rounded-xl transition-colors text-left"
+            >
+              <div className="w-9 h-9 rounded-xl bg-[#eef2f7] flex items-center justify-center shrink-0">
+                <FileText className="w-4 h-4 text-[#2c4160]" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-[#182235]">Export as CSV</div>
+                <div className="text-xs text-[#6f7b90]">Open in Excel, Google Sheets, etc.</div>
+              </div>
+              <Download className="w-4 h-4 text-[#6f7b90] ml-auto" />
+            </button>
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#6f7b90] mb-1">Import & Reset</div>
+
+            <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-[#e5e9f0] hover:border-[#c8d0db] hover:bg-[#f6f8fb] rounded-xl transition-colors text-left"
+            >
+              <div className="w-9 h-9 rounded-xl bg-[#eef2f7] flex items-center justify-center shrink-0">
+                <Upload className="w-4 h-4 text-[#2c4160]" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-[#182235]">Import JSON</div>
+                <div className="text-xs text-[#6f7b90]">Restore a previously exported backup</div>
+              </div>
+            </button>
+
+            <button
+              onClick={handleReset}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-[#e5e9f0] hover:border-amber-300 hover:bg-amber-50 rounded-xl transition-colors text-left"
+            >
+              <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                <RotateCcw className="w-4 h-4 text-amber-600" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-[#182235]">Reset to Sample Data</div>
+                <div className="text-xs text-[#6f7b90]">Restore the built-in example tests</div>
+              </div>
+            </button>
+
+            <button
+              onClick={handleClear}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-[#e5e9f0] hover:border-red-300 hover:bg-red-50 rounded-xl transition-colors text-left"
+            >
+              <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
+                <Trash2 className="w-4 h-4 text-red-500" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-red-600">Clear All Tests</div>
+                <div className="text-xs text-[#6f7b90]">Permanently delete all saved data</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div className="px-6 pb-5">
+          <p className="text-center text-[10px] text-[#6f7b90]">
+            All data is stored in your browser's local storage — nothing is sent to any server.
+          </p>
+        </div>
+      </div>
+
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm font-semibold z-50 transition-all ${
+          toast.type === 'success'
+            ? 'bg-emerald-700 text-white'
+            : 'bg-red-600 text-white'
+        }`}>
+          {toast.type === 'success'
+            ? <CheckCircle className="w-4 h-4" />
+            : <AlertCircle className="w-4 h-4" />}
+          {toast.msg}
+        </div>
+      )}
+    </div>
+  );
+};
