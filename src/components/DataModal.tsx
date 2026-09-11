@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { X, Download, Upload, RotateCcw, Trash2, FileJson, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { useSAT } from '../context/SATContext';
+import { ConfirmDialog } from './ConfirmDialog';
 
 interface DataModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ export const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose }) => {
   const { exportJSON, exportCSV, resetToSample, clearAllTests, importTests, tests } = useSAT();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [confirmAction, setConfirmAction] = useState<'reset' | 'clear' | null>(null);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
@@ -39,20 +41,18 @@ export const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose }) => {
     e.target.value = '';
   };
 
-  const handleReset = () => {
-    if (window.confirm('Reset to sample data? Your current data will be replaced.')) {
-      resetToSample();
-      showToast('success', 'Reset to sample data.');
-      onClose();
-    }
+  const handleExecuteReset = () => {
+    resetToSample();
+    showToast('success', 'Reset to sample data.');
+    setConfirmAction(null);
+    onClose();
   };
 
-  const handleClear = () => {
-    if (window.confirm('Clear ALL tests? This cannot be undone.')) {
-      clearAllTests();
-      showToast('success', 'All tests cleared.');
-      onClose();
-    }
+  const handleExecuteClear = () => {
+    clearAllTests();
+    showToast('success', 'All tests cleared.');
+    setConfirmAction(null);
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -145,7 +145,7 @@ export const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose }) => {
             </button>
 
             <button
-              onClick={handleReset}
+              onClick={() => setConfirmAction('reset')}
               className="w-full flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800/80 border border-[#e5e9f0] dark:border-slate-700 hover:border-amber-300 dark:hover:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-xl transition-colors text-left"
             >
               <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950 flex items-center justify-center shrink-0">
@@ -158,7 +158,7 @@ export const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose }) => {
             </button>
 
             <button
-              onClick={handleClear}
+              onClick={() => setConfirmAction('clear')}
               className="w-full flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800/80 border border-[#e5e9f0] dark:border-slate-700 hover:border-red-300 dark:hover:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors text-left"
             >
               <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-950 flex items-center justify-center shrink-0">
@@ -178,6 +178,27 @@ export const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose }) => {
           </p>
         </div>
       </div>
+
+      {/* In-app reliable confirmation dialog */}
+      <ConfirmDialog
+        isOpen={confirmAction === 'reset'}
+        title="Reset to Sample Data?"
+        message="Your current test records will be replaced with official College Board Bluebook practice samples. This cannot be undone."
+        confirmLabel="Reset Data"
+        variant="warning"
+        onConfirm={handleExecuteReset}
+        onCancel={() => setConfirmAction(null)}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmAction === 'clear'}
+        title="Clear All Test Records?"
+        message="Are you sure you want to permanently delete ALL recorded tests? This will clear all score trends, history, and domain metrics."
+        confirmLabel="Clear Everything"
+        variant="danger"
+        onConfirm={handleExecuteClear}
+        onCancel={() => setConfirmAction(null)}
+      />
 
       {/* Toast */}
       {toast && (

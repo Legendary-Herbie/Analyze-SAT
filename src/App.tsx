@@ -1,28 +1,48 @@
 import { useState } from 'react';
 import { SATProvider } from './context/SATContext';
 import { Header } from './components/Header';
+import { NavigationTabs, MainTabType } from './components/NavigationTabs';
 import { HeroSummary } from './components/HeroSummary';
 import { ScoreTrendsChart } from './components/ScoreTrendsChart';
 import { DomainAnalysis } from './components/DomainAnalysis';
 import { PerformanceInsights } from './components/PerformanceInsights';
 import { TestHistory } from './components/TestHistory';
-import { TestTimelineCard } from './components/TestTimelineCard';
+import { StudyPlanner } from './components/StudyPlanner';
 import { TestModal } from './components/TestModal';
 import { DataModal } from './components/DataModal';
 import { GoalPlannerModal } from './components/GoalPlannerModal';
-import { ModuleSimulatorModal } from './components/ModuleSimulatorModal';
 import { ScoreReportImporterModal } from './components/ScoreReportImporterModal';
 import { ScoreReportPrintView } from './components/ScoreReportPrintView';
 import { SATTest } from './types/sat';
 
 function App() {
+  const [activeTab, setActiveTab] = useState<MainTabType>(() => {
+    try {
+      const saved = localStorage.getItem('satTrackerActiveTab');
+      if (saved && ['overview', 'planner', 'domains', 'insights', 'history', 'all'].includes(saved)) {
+        return saved as MainTabType;
+      }
+    } catch (e) {
+      console.error('Failed to load active tab from storage', e);
+    }
+    return 'overview';
+  });
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDataModal, setShowDataModal] = useState(false);
   const [showPlannerModal, setShowPlannerModal] = useState(false);
-  const [showSimulatorModal, setShowSimulatorModal] = useState(false);
   const [showImporterModal, setShowImporterModal] = useState(false);
   const [showPrintReport, setShowPrintReport] = useState(false);
   const [editingTest, setEditingTest] = useState<SATTest | null>(null);
+
+  const handleTabChange = (tab: MainTabType) => {
+    setActiveTab(tab);
+    try {
+      localStorage.setItem('satTrackerActiveTab', tab);
+    } catch (e) {
+      console.error('Failed to save active tab to storage', e);
+    }
+  };
 
   const handleOpenEdit = (test: SATTest) => {
     setEditingTest(test);
@@ -34,6 +54,13 @@ function App() {
     setEditingTest(null);
   };
 
+  const handleScheduleDrill = (domainId: string) => {
+    handleTabChange('planner');
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('open-schedule-drill', { detail: { domainId } }));
+    }, 60);
+  };
+
   return (
     <SATProvider>
       <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 text-[#182235] dark:text-slate-100 transition-colors">
@@ -42,32 +69,63 @@ function App() {
             onOpenAddModal={() => setShowAddModal(true)}
             onOpenDataModal={() => setShowDataModal(true)}
             onOpenPlannerModal={() => setShowPlannerModal(true)}
-            onOpenSimulatorModal={() => setShowSimulatorModal(true)}
             onOpenImporterModal={() => setShowImporterModal(true)}
             onOpenPrintReport={() => setShowPrintReport(true)}
           />
 
-          <HeroSummary />
+          {/* Navigation Tabs for clean uncluttered layout */}
+          <NavigationTabs
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
 
-          {/* Timeline Countdown & Pacing Milestones */}
-          <TestTimelineCard />
+          {/* Tab 1: Overview & Trends */}
+          {activeTab === 'overview' && (
+            <div className="space-y-5 animate-in fade-in duration-200">
+              <HeroSummary onOpenGoalPlanner={() => setShowPlannerModal(true)} />
+              <ScoreTrendsChart onOpenAddModal={() => setShowAddModal(true)} />
+            </div>
+          )}
 
-          <ScoreTrendsChart onOpenAddModal={() => setShowAddModal(true)} />
+          {/* Tab 2: Study Planner */}
+          {activeTab === 'planner' && (
+            <div className="animate-in fade-in duration-200">
+              <StudyPlanner />
+            </div>
+          )}
 
-          {/* Performance Insights */}
-          <div className="mt-5">
-            <PerformanceInsights />
-          </div>
+          {/* Tab 3: Domain Mastery */}
+          {activeTab === 'domains' && (
+            <div className="animate-in fade-in duration-200">
+              <DomainAnalysis onScheduleDrill={handleScheduleDrill} />
+            </div>
+          )}
 
-          {/* Domain Analysis (comes after Performance Insights) */}
-          <div className="mt-5">
-            <DomainAnalysis />
-          </div>
+          {/* Tab 4: Score Insights & Pathways */}
+          {activeTab === 'insights' && (
+            <div className="animate-in fade-in duration-200">
+              <PerformanceInsights />
+            </div>
+          )}
 
-          {/* Test History */}
-          <div className="mt-5">
-            <TestHistory onEditTest={handleOpenEdit} />
-          </div>
+          {/* Tab 5: Test History */}
+          {activeTab === 'history' && (
+            <div className="animate-in fade-in duration-200">
+              <TestHistory onEditTest={handleOpenEdit} />
+            </div>
+          )}
+
+          {/* Tab 6: Full View (All sections stacked) */}
+          {activeTab === 'all' && (
+            <div className="space-y-5 animate-in fade-in duration-200">
+              <HeroSummary onOpenGoalPlanner={() => setShowPlannerModal(true)} />
+              <StudyPlanner />
+              <ScoreTrendsChart onOpenAddModal={() => setShowAddModal(true)} />
+              <PerformanceInsights />
+              <DomainAnalysis onScheduleDrill={handleScheduleDrill} />
+              <TestHistory onEditTest={handleOpenEdit} />
+            </div>
+          )}
 
           <p className="text-center text-[11px] text-[#6f7b90] dark:text-slate-500 mt-8 no-print">
             All data is stored locally in your browser — private, secure, and offline-capable.
@@ -87,10 +145,6 @@ function App() {
         <GoalPlannerModal
           isOpen={showPlannerModal}
           onClose={() => setShowPlannerModal(false)}
-        />
-        <ModuleSimulatorModal
-          isOpen={showSimulatorModal}
-          onClose={() => setShowSimulatorModal(false)}
         />
         <ScoreReportImporterModal
           isOpen={showImporterModal}

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, BarChart3, Database, Moon, Sun, Compass, Sparkles, Printer } from 'lucide-react';
+import { Plus, BarChart3, Database, Moon, Sun, Sparkles, Printer } from 'lucide-react';
 
 interface HeaderProps {
   onOpenAddModal: () => void;
   onOpenDataModal: () => void;
   onOpenPlannerModal: () => void;
-  onOpenSimulatorModal: () => void;
   onOpenImporterModal: () => void;
   onOpenPrintReport: () => void;
 }
@@ -14,7 +13,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddModal,
   onOpenDataModal,
   onOpenPlannerModal,
-  onOpenSimulatorModal,
   onOpenImporterModal,
   onOpenPrintReport,
 }) => {
@@ -45,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black text-[#182235] dark:text-slate-100 tracking-tight">
+            <h1 className="text-lg sm:text-xl font-extrabold text-[#182235] dark:text-slate-100 tracking-tight">
               SAT Performance Tracker
             </h1>
             <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
@@ -53,23 +51,12 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
           <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5">
-            Digital SAT analytics, domain mastery, superscore pathways, and routing simulator
+            Digital SAT analytics, domain mastery, and superscore pathways
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
-        {/* Module 2 Simulator button */}
-        <button
-          onClick={onOpenSimulatorModal}
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 rounded-xl hover:bg-[#f6f8fb] dark:hover:bg-slate-700/80 transition-colors shadow-sm"
-          title="Digital SAT Module 2 Adaptive Routing Simulator"
-        >
-          <Compass className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-          <span className="hidden sm:inline">Module 2 Simulator</span>
-          <span className="sm:hidden">Simulator</span>
-        </button>
-
         {/* Smart Importer button */}
         <button
           onClick={onOpenImporterModal}
@@ -88,7 +75,8 @@ export const Header: React.FC<HeaderProps> = ({
           title="Target score goals and superscore pathways"
         >
           <BarChart3 className="w-4 h-4 text-[#2c4160] dark:text-indigo-400" />
-          <span className="hidden sm:inline">Pathways</span>
+          <span className="hidden sm:inline">Goals & Pathways</span>
+          <span className="sm:hidden">Goals</span>
         </button>
 
         {/* Print / PDF Summary Report */}

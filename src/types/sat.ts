@@ -64,3 +64,47 @@ export interface StudyMilestone {
   notes?: string;
 }
 
+export type SessionType = 'practice_test' | 'study_block';
+export type PriorityLevel = 'high' | 'medium' | 'low';
+
+export interface ScheduledSession {
+  id: string;
+  type: SessionType;
+  title: string;
+  date: string; // YYYY-MM-DD
+  time?: string; // HH:MM
+  durationMinutes: number;
+  section?: SATSection | 'both';
+  domainId?: string;
+  priority: PriorityLevel;
+  completed: boolean;
+  notes?: string;
+  isSuggested?: boolean;
+  suggestionKey?: string;
+  createdAt: number;
+}
+
+export interface PerformanceGapAnalysis {
+  targetScore: number;
+  currentScore: number;
+  scoreGap: number;
+  rwCurrent: number;
+  mathCurrent: number;
+  rwTarget: number;
+  mathTarget: number;
+  rwGap: number;
+  mathGap: number;
+  recommendedWeeklyHours: number;
+  recommendedRWPercent: number;
+  recommendedMathPercent: number;
+  weakestDomains: {
+    domainId: string;
+    domainName: string;
+    section: SATSection;
+    latestScore: number | null;
+    latestPct: number | null;
+    gapPriority: 'critical' | 'moderate' | 'solid';
+    reason: string;
+  }[];
+}
+

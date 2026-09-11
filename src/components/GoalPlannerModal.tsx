@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Target, Sparkles } from 'lucide-react';
+import { X, Target, Sparkles, CheckCircle2, Award, Calendar } from 'lucide-react';
 import { useSAT } from '../context/SATContext';
 import { calculateSuperscorePathways } from '../utils/pathwayCalculator';
 
@@ -19,10 +19,19 @@ export const GoalPlannerModal: React.FC<GoalPlannerModalProps> = ({ isOpen, onCl
   }, [isOpen, targetScore]);
 
   const numTarget = Number(inputVal) || targetScore;
-  const current = latestTest?.total ?? 0;
-  const currentSuperscore = superscore?.total ?? current;
-  const needed = Math.max(0, numTarget - currentSuperscore);
-  const progressPct = currentSuperscore > 0 ? Math.min(100, Math.round((currentSuperscore / numTarget) * 100)) : 0;
+  
+  // Progress calculations based on most recent test
+  const latestScore = latestTest?.total ?? 0;
+  const latestNeeded = Math.max(0, numTarget - latestScore);
+  const latestExceeded = Math.max(0, latestScore - numTarget);
+  const isLatestGoalMet = latestScore >= numTarget && latestScore > 0;
+  const latestProgressPct = latestScore > 0 ? Math.min(100, Math.round((latestScore / numTarget) * 100)) : 0;
+
+  // Progress calculations based on superscore
+  const currentSuperscore = superscore?.total ?? latestScore;
+  const superscoreNeeded = Math.max(0, numTarget - currentSuperscore);
+  const isSuperscoreGoalMet = currentSuperscore >= numTarget && currentSuperscore > 0;
+  const superscoreProgressPct = currentSuperscore > 0 ? Math.min(100, Math.round((currentSuperscore / numTarget) * 100)) : 0;
 
   const pathwaysResult = calculateSuperscorePathways(superscore, numTarget, domainTrends);
 
@@ -50,10 +59,10 @@ export const GoalPlannerModal: React.FC<GoalPlannerModalProps> = ({ isOpen, onCl
               Strategic Score Optimizer
             </div>
             <h2 className="text-xl font-black text-[#182235] dark:text-slate-100">
-              Goal Planner & Superscore Pathways
+              Goal Planner & Target Pathways
             </h2>
             <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-1">
-              Find the highest-probability route to hitting your target composite score.
+              Track your trajectory against your target score based on your latest practice test result.
             </p>
           </div>
           <button
@@ -100,7 +109,11 @@ export const GoalPlannerModal: React.FC<GoalPlannerModalProps> = ({ isOpen, onCl
                 <div className="flex items-baseline gap-2 mt-0.5">
                   <span className="text-2xl font-black text-[#182235] dark:text-white">{numTarget}</span>
                   <span className="text-xs text-[#6f7b90] dark:text-slate-400">
-                    ({needed > 0 ? `+${needed} pts needed from superscore ${currentSuperscore}` : 'Target achieved!'})
+                    {latestScore > 0
+                      ? isLatestGoalMet
+                        ? '🎉 Target achieved on recent test!'
+                        : `(${latestNeeded} pts needed from latest test ${latestScore})`
+                      : '(No test recorded yet)'}
                   </span>
                 </div>
               </div>
@@ -124,12 +137,89 @@ export const GoalPlannerModal: React.FC<GoalPlannerModalProps> = ({ isOpen, onCl
               onChange={e => setInputVal(e.target.value)}
               className="w-full mt-3 accent-[#2c4160] dark:accent-indigo-400"
             />
-            <div className="flex justify-between text-[10px] text-[#6f7b90] dark:text-slate-400 mt-1">
+            <div className="flex justify-between text-[10px] text-[#6f7b90] dark:text-slate-400 mt-1 font-semibold">
               <span>400</span>
               <span>1000</span>
               <span>1200</span>
               <span>1400</span>
               <span>1600</span>
+            </div>
+          </div>
+
+          {/* Visual Progress Bar based on Most Recent Practice Test Result */}
+          <div className="bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700/90 rounded-xl p-4 shadow-xs">
+            <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <Target className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-[#182235] dark:text-white uppercase tracking-wider">
+                      Recent Test Target Progress
+                    </span>
+                    {latestTest && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#f0f4f9] dark:bg-slate-700 text-[#405978] dark:text-slate-300">
+                        {latestTest.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-baseline gap-2">
+                <span className="text-sm font-black text-[#182235] dark:text-white">
+                  {latestScore > 0 ? latestScore : '—'}{' '}
+                  <span className="text-xs font-normal text-[#6f7b90] dark:text-slate-400">/ {numTarget}</span>
+                </span>
+                <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                  isLatestGoalMet
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                    : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'
+                }`}>
+                  {latestProgressPct}%
+                </span>
+              </div>
+            </div>
+
+            {/* Visual Progress Bar Track */}
+            <div className="relative w-full h-3.5 bg-[#eef1f5] dark:bg-slate-700/80 rounded-full overflow-hidden p-0.5">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ease-out ${
+                  isLatestGoalMet
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-sm'
+                    : latestProgressPct >= 90
+                    ? 'bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-400 shadow-sm'
+                    : 'bg-gradient-to-r from-[#2c4160] to-indigo-500 shadow-sm'
+                }`}
+                style={{ width: `${latestProgressPct}%` }}
+              />
+            </div>
+
+            {/* Progress description and sub-scores */}
+            <div className="flex items-center justify-between text-[11px] text-[#6f7b90] dark:text-slate-400 mt-2 flex-wrap gap-2">
+              <div>
+                {isLatestGoalMet ? (
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Target achieved! Exceeded by +{latestExceeded} pts on your most recent test!
+                  </span>
+                ) : latestScore > 0 ? (
+                  <span>
+                    <strong className="text-[#182235] dark:text-slate-200 font-extrabold">{latestNeeded} points</strong> needed to reach {numTarget} on your next sitting.
+                  </span>
+                ) : (
+                  <span>Add your first practice test to calculate your distance to {numTarget}.</span>
+                )}
+              </div>
+
+              {latestTest && (
+                <div className="flex items-center gap-2.5 font-medium">
+                  <span>R&W: <strong className="text-[#182235] dark:text-slate-200">{latestTest.rw}</strong></span>
+                  <span>•</span>
+                  <span>Math: <strong className="text-[#182235] dark:text-slate-200">{latestTest.math}</strong></span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -238,35 +328,65 @@ export const GoalPlannerModal: React.FC<GoalPlannerModalProps> = ({ isOpen, onCl
           ) : (
             /* Target Goal Progress Tab */
             <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-xs mb-1.5">
-                  <span className="font-semibold text-[#6f7b90] dark:text-slate-400">Superscore Progress</span>
-                  <span className="font-extrabold text-[#182235] dark:text-white">
-                    {currentSuperscore} / {numTarget}
-                  </span>
+              {/* Comparison: Recent Test vs Superscore Progress */}
+              <div className="space-y-3 bg-[#fafbfc] dark:bg-slate-800/40 p-4 rounded-xl border border-[#e5e9f0] dark:border-slate-700">
+                <div className="text-xs font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
+                  Target Trajectory Comparison
                 </div>
-                <div className="w-full h-3 bg-[#eef1f5] dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-700 ${
-                      currentSuperscore >= numTarget ? 'bg-emerald-500' : 'bg-[#2c4160] dark:bg-indigo-500'
-                    }`}
-                    style={{ width: `${progressPct}%` }}
-                  />
+
+                {/* Most Recent Test Sitting */}
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="font-bold text-[#182235] dark:text-white flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-indigo-500" />
+                      Most Recent Test Sitting ({latestTest ? latestTest.name : 'None'})
+                    </span>
+                    <span className="font-extrabold text-[#182235] dark:text-white">
+                      {latestScore} / {numTarget} ({latestProgressPct}%)
+                    </span>
+                  </div>
+                  <div className="w-full h-2.5 bg-[#eef1f5] dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        isLatestGoalMet ? 'bg-emerald-500' : 'bg-[#2c4160] dark:bg-indigo-500'
+                      }`}
+                      style={{ width: `${latestProgressPct}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="text-xs text-[#6f7b90] dark:text-slate-400 mt-1">
-                  {currentSuperscore >= numTarget
-                    ? '🎉 Goal achieved! Consider aiming for a higher composite score.'
-                    : `${needed} more points needed (${progressPct}% there)`}
+
+                {/* Superscore Best Composite */}
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="font-bold text-[#182235] dark:text-white flex items-center gap-1.5">
+                      <Award className="w-3.5 h-3.5 text-amber-500" />
+                      Superscore Composite
+                    </span>
+                    <span className="font-extrabold text-[#182235] dark:text-white">
+                      {currentSuperscore} / {numTarget} ({superscoreProgressPct}%{superscoreNeeded > 0 ? ` · +${superscoreNeeded} pts` : ' · Goal met'})
+                    </span>
+                  </div>
+                  <div className="w-full h-2.5 bg-[#eef1f5] dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        isSuperscoreGoalMet ? 'bg-emerald-500' : 'bg-indigo-600 dark:bg-indigo-400'
+                      }`}
+                      style={{ width: `${superscoreProgressPct}%` }}
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-2">
+              {/* Milestone Metrics Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
                 {[
-                  { label: 'Personal Best', value: personalBest },
-                  { label: 'Average Score', value: averageScore },
-                  { label: 'Current Superscore', value: superscore?.total },
-                  { label: 'Points to Goal', value: needed > 0 ? `+${needed}` : '✓ Done' },
-                ].map(({ label, value }) => (
+                  { label: 'Latest Practice Test', value: latestScore > 0 ? latestScore : '—', sub: latestTest?.name },
+                  { label: 'Target Composite', value: numTarget, sub: 'Target goal' },
+                  { label: 'Points to Target', value: isLatestGoalMet ? '✓ Achieved' : `+${latestNeeded}`, sub: 'From latest test' },
+                  { label: 'Personal Best', value: personalBest ?? '—', sub: 'Single test record' },
+                  { label: 'Current Superscore', value: superscore?.total ?? '—', sub: 'Best R&W + Math' },
+                  { label: 'Average Score', value: averageScore ?? '—', sub: 'Across all tests' },
+                ].map(({ label, value, sub }) => (
                   <div
                     key={label}
                     className="bg-[#f6f8fb] dark:bg-slate-800/60 border border-[#e5e9f0] dark:border-slate-700 rounded-xl p-3"
@@ -274,9 +394,14 @@ export const GoalPlannerModal: React.FC<GoalPlannerModalProps> = ({ isOpen, onCl
                     <div className="text-[10px] text-[#6f7b90] dark:text-slate-400 font-bold uppercase tracking-wider">
                       {label}
                     </div>
-                    <div className="text-xl font-black text-[#182235] dark:text-white mt-1">
-                      {value ?? '—'}
+                    <div className="text-lg font-black text-[#182235] dark:text-white mt-0.5">
+                      {value}
                     </div>
+                    {sub && (
+                      <div className="text-[10px] text-[#6f7b90] dark:text-slate-500 mt-0.5 truncate">
+                        {sub}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -294,7 +419,7 @@ export const GoalPlannerModal: React.FC<GoalPlannerModalProps> = ({ isOpen, onCl
           </button>
           <button
             onClick={handleSave}
-            className="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-extrabold text-white bg-[#2c4160] hover:bg-[#243955] dark:bg-indigo-600 dark:hover:bg-indigo-700 rounded-xl transition-all active:scale-95 shadow-md"
+            className="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-extrabold text-white bg-[#2c4160] hover:bg-[#243955] dark:bg-indigo-600 dark:hover:bg-indigo-700 rounded-xl transition-all active:scale-95 shadow-md cursor-pointer"
           >
             <Target className="w-3.5 h-3.5" />
             <span>Save Target Score</span>

@@ -1,5 +1,6 @@
-import React from 'react';
-import { TrendingUp, TrendingDown, Minus, Award, Target, BookOpen, Calculator } from 'lucide-react';
+import React, { useEffect, useRef, useCallback } from 'react';
+import { TrendingUp, TrendingDown, Minus, Award, Target, BookOpen, Calculator, CheckCircle2, ChevronRight, Sparkles } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { useSAT } from '../context/SATContext';
 
 function DeltaBadge({ delta }: { delta: number | null }) {
@@ -35,14 +36,14 @@ function StatCard({
         <Icon className="w-3.5 h-3.5" />
         {label}
       </div>
-      <div className="text-[22px] font-black text-white leading-tight">{value}</div>
+      <div className="text-lg sm:text-xl font-black text-white leading-tight">{value}</div>
       {sub && <div className="text-[11px] text-white/60 mt-0.5">{sub}</div>}
     </div>
   );
 }
 
-export const HeroSummary: React.FC = () => {
-  const { latestTest, previousTest, personalBest, superscore, scoreDelta } = useSAT();
+export const HeroSummary: React.FC<{ onOpenGoalPlanner?: () => void }> = ({ onOpenGoalPlanner }) => {
+  const { latestTest, previousTest, personalBest, superscore, scoreDelta, targetScore } = useSAT();
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return 'Date not set';
@@ -64,6 +65,67 @@ export const HeroSummary: React.FC = () => {
     return 'bg-white/10 border-white/10 text-white/70';
   };
 
+  // Target calculation based on most recent test
+  const latestScore = latestTest?.total ?? 0;
+  const isGoalMet = latestScore >= targetScore && latestScore > 0;
+  const pointsNeeded = Math.max(0, targetScore - latestScore);
+  const pointsExceeded = Math.max(0, latestScore - targetScore);
+  const progressPct = targetScore > 0 && latestScore > 0
+    ? Math.min(100, Math.round((latestScore / targetScore) * 100))
+    : 0;
+
+  // Confetti effect trigger
+  const lastTriggeredKey = useRef<string | null>(null);
+
+  const triggerConfetti = useCallback(() => {
+    try {
+      // Center celebratory burst
+      confetti({
+        particleCount: 75,
+        spread: 70,
+        origin: { y: 0.65 },
+        colors: ['#10b981', '#6366f1', '#f59e0b', '#38bdf8', '#fbbf24', '#a855f7'],
+        disableForReducedMotion: true,
+      });
+
+      // Side bursts
+      setTimeout(() => {
+        confetti({
+          particleCount: 40,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0.15, y: 0.7 },
+          colors: ['#34d399', '#818cf8', '#fbbf24'],
+          disableForReducedMotion: true,
+        });
+        confetti({
+          particleCount: 40,
+          angle: 120,
+          spread: 55,
+          origin: { x: 0.85, y: 0.7 },
+          colors: ['#34d399', '#818cf8', '#fbbf24'],
+          disableForReducedMotion: true,
+        });
+      }, 200);
+    } catch (e) {
+      console.error('Failed to trigger confetti animation', e);
+    }
+  }, []);
+
+  // Automatically trigger confetti when target score is achieved or surpassed
+  useEffect(() => {
+    if (isGoalMet && latestTest) {
+      const triggerKey = `${latestTest.id}-${latestScore}-${targetScore}`;
+      if (lastTriggeredKey.current !== triggerKey) {
+        lastTriggeredKey.current = triggerKey;
+        const timer = setTimeout(() => {
+          triggerConfetti();
+        }, 450);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isGoalMet, latestTest, latestScore, targetScore, triggerConfetti]);
+
   return (
     <section
       className="rounded-2xl p-6 mb-5 relative overflow-hidden"
@@ -78,7 +140,7 @@ export const HeroSummary: React.FC = () => {
           <div className="text-[11px] font-extrabold uppercase tracking-widest text-white/60 mb-1">
             Latest Score
           </div>
-          <div className="text-[52px] sm:text-[62px] font-black text-white leading-none tracking-tight">
+          <div className="text-3xl sm:text-[38px] font-black text-white leading-none tracking-tight">
             {latestTest ? latestTest.total : '—'}
           </div>
           <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -132,6 +194,107 @@ export const HeroSummary: React.FC = () => {
           icon={Target}
         />
       </div>
+
+      {/* Visual Target Score Progress Bar based on most recent practice test */}
+      <div className="mt-5 p-4 rounded-xl bg-white/[0.08] border border-white/15 backdrop-blur-xs">
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-2.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0">
+              <Target className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-wider text-white">
+                  Target Score Progress
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/15 text-white/90">
+                  Latest Test: {latestTest ? latestTest.name : 'No test yet'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <span className="text-sm font-black text-white">
+                {latestScore > 0 ? latestScore : '—'}{' '}
+                <span className="text-xs font-normal text-white/60">/ {targetScore}</span>
+              </span>
+              <span className="text-xs font-black text-amber-300 ml-2">
+                {progressPct}%
+              </span>
+            </div>
+            {onOpenGoalPlanner && (
+              <button
+                type="button"
+                onClick={onOpenGoalPlanner}
+                className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all cursor-pointer active:scale-95"
+                title="Customize your target composite score and view score pathways"
+              >
+                <span>Adjust Goal</span>
+                <ChevronRight className="w-3 h-3 text-white/70" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* The Visual Progress Track */}
+        <div className="relative w-full h-3.5 bg-black/35 rounded-full overflow-hidden p-0.5 border border-white/15 shadow-inner">
+          <div
+            className={`h-full rounded-full transition-all duration-700 ease-out ${
+              isGoalMet
+                ? 'bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 shadow-[0_0_14px_rgba(52,211,153,0.6)]'
+                : progressPct >= 90
+                ? 'bg-gradient-to-r from-indigo-400 via-sky-400 to-cyan-300 shadow-[0_0_12px_rgba(129,140,248,0.5)]'
+                : 'bg-gradient-to-r from-blue-500 via-indigo-400 to-amber-300 shadow-[0_0_10px_rgba(59,130,246,0.4)]'
+            }`}
+            style={{ width: `${progressPct}%` }}
+          />
+
+          {/* Sub-milestone markers */}
+          <div className="absolute inset-0 flex justify-between px-3 pointer-events-none opacity-30">
+            <div className="w-px h-full bg-white/40" />
+            <div className="w-px h-full bg-white/40" />
+            <div className="w-px h-full bg-white/40" />
+          </div>
+        </div>
+
+        {/* Progress details & breakdown */}
+        <div className="flex items-center justify-between text-xs text-white/75 mt-2 flex-wrap gap-2">
+          <div className="flex items-center gap-1.5">
+            {isGoalMet ? (
+              <button
+                type="button"
+                onClick={triggerConfetti}
+                className="inline-flex items-center gap-1.5 font-bold text-emerald-300 hover:text-emerald-200 bg-emerald-500/20 hover:bg-emerald-500/30 px-2.5 py-1 rounded-lg border border-emerald-400/30 transition-all cursor-pointer active:scale-95 shadow-xs group"
+                title="Goal met! Click to celebrate with confetti"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 group-hover:rotate-12 transition-transform" />
+                <span>Target achieved! Exceeded by +{pointsExceeded} pts on this sitting.</span>
+                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-white/20 text-white group-hover:bg-white/30 transition-colors">
+                  🎉 Celebrate
+                </span>
+              </button>
+            ) : latestScore > 0 ? (
+              <span>
+                <strong className="text-white font-extrabold">{pointsNeeded} pts</strong> needed to reach your target of {targetScore}.
+              </span>
+            ) : (
+              <span>Log a test to see your score progress toward {targetScore}.</span>
+            )}
+          </div>
+
+          {latestTest && (
+            <div className="flex items-center gap-3 text-[11px] text-white/70">
+              <span>R&W: <strong className="text-white font-bold">{latestTest.rw}</strong>/800</span>
+              <span className="text-white/40">•</span>
+              <span>Math: <strong className="text-white font-bold">{latestTest.math}</strong>/800</span>
+            </div>
+          )}
+        </div>
+      </div>
     </section>
   );
 };
+

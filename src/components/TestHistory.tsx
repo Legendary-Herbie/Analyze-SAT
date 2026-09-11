@@ -3,15 +3,16 @@ import { Trash2, ChevronDown, ChevronUp, Calendar, BookOpen, Edit2, Compass } fr
 import { useSAT } from '../context/SATContext';
 import { SATTest } from '../types/sat';
 import { DOMAIN_META } from '../constants/domains';
+import { ConfirmDialog } from './ConfirmDialog';
 
 function TestRow({
   test,
-  onDelete,
+  onRequestDelete,
   onEdit,
   isBest,
 }: {
   test: SATTest;
-  onDelete: (id: string) => void;
+  onRequestDelete: (test: SATTest) => void;
   onEdit?: (test: SATTest) => void;
   isBest: boolean;
 }) {
@@ -73,11 +74,7 @@ function TestRow({
         )}
 
         <button
-          onClick={() => {
-            if (window.confirm('Delete this test? This cannot be undone.')) {
-              onDelete(test.id);
-            }
-          }}
+          onClick={() => onRequestDelete(test)}
           className="text-[#6f7b90] dark:text-slate-400 hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40"
           title="Delete test"
         >
@@ -139,6 +136,7 @@ function TestRow({
 
 export const TestHistory: React.FC<{ onEditTest?: (test: SATTest) => void }> = ({ onEditTest }) => {
   const { orderedTests, deleteTest, personalBest } = useSAT();
+  const [testToDelete, setTestToDelete] = useState<SATTest | null>(null);
   const rows = [...orderedTests].reverse().slice(0, 10);
 
   return (
@@ -177,7 +175,7 @@ export const TestHistory: React.FC<{ onEditTest?: (test: SATTest) => void }> = (
             <TestRow
               key={test.id}
               test={test}
-              onDelete={deleteTest}
+              onRequestDelete={setTestToDelete}
               onEdit={onEditTest}
               isBest={test.total === personalBest}
             />
@@ -190,6 +188,22 @@ export const TestHistory: React.FC<{ onEditTest?: (test: SATTest) => void }> = (
           )}
         </>
       )}
+
+      {/* In-app reliable confirmation dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(testToDelete)}
+        title="Delete Practice Test?"
+        message={`Are you sure you want to delete "${testToDelete?.name || 'this test'}" (${testToDelete?.total} total score)? This will update all superscore and trend averages.`}
+        confirmLabel="Delete Test"
+        variant="danger"
+        onConfirm={() => {
+          if (testToDelete) {
+            deleteTest(testToDelete.id);
+            setTestToDelete(null);
+          }
+        }}
+        onCancel={() => setTestToDelete(null)}
+      />
     </section>
   );
 };
