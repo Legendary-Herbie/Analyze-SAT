@@ -7,23 +7,29 @@ export function calculatePerformanceGaps(
   superscore: { total: number; rw: number; math: number } | null,
   domainTrends: DomainTrend[]
 ): PerformanceGapAnalysis {
-  const currentScore = latestTest?.total ?? (superscore?.total ?? 1350);
-  const rwCurrent = latestTest?.rw ?? (superscore?.rw ?? 670);
-  const mathCurrent = latestTest?.math ?? (superscore?.math ?? 680);
+  const hasTests = latestTest != null || superscore != null;
+  const currentScore = latestTest?.total ?? (superscore?.total ?? 0);
+  const rwCurrent = latestTest?.rw ?? (superscore?.rw ?? 0);
+  const mathCurrent = latestTest?.math ?? (superscore?.math ?? 0);
 
-  const scoreGap = Math.max(0, targetScore - currentScore);
+  const scoreGap = hasTests ? Math.max(0, targetScore - currentScore) : targetScore;
 
   // Balanced target distribution
-  // If target is 1500, split fairly based on current performance
-  const totalBothCurrent = rwCurrent + mathCurrent;
-  let rwTarget = Math.round(targetScore * (rwCurrent / (totalBothCurrent || 1)));
-  // Round to nearest 10
-  rwTarget = Math.round(rwTarget / 10) * 10;
-  rwTarget = Math.min(800, Math.max(200, rwTarget));
-  const mathTarget = Math.min(800, Math.max(200, targetScore - rwTarget));
+  let rwTarget = 750;
+  let mathTarget = 750;
+  if (hasTests && (rwCurrent + mathCurrent > 0)) {
+    const totalBothCurrent = rwCurrent + mathCurrent;
+    rwTarget = Math.round(targetScore * (rwCurrent / totalBothCurrent));
+    rwTarget = Math.round(rwTarget / 10) * 10;
+    rwTarget = Math.min(800, Math.max(200, rwTarget));
+    mathTarget = Math.min(800, Math.max(200, targetScore - rwTarget));
+  } else {
+    rwTarget = Math.min(800, Math.round(targetScore / 20) * 10);
+    mathTarget = Math.min(800, targetScore - rwTarget);
+  }
 
-  const rwGap = Math.max(0, rwTarget - rwCurrent);
-  const mathGap = Math.max(0, mathTarget - mathCurrent);
+  const rwGap = hasTests ? Math.max(0, rwTarget - rwCurrent) : rwTarget;
+  const mathGap = hasTests ? Math.max(0, mathTarget - mathCurrent) : mathTarget;
 
   // Recommended weekly hours based on score gap
   let recommendedWeeklyHours = 3.5; // Baseline maintenance

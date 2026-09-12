@@ -98,7 +98,10 @@ function App() {
           {/* Tab 1: Overview & Trends */}
           {activeTab === 'overview' && (
             <div className="space-y-5 animate-in fade-in duration-200">
-              <HeroSummary onOpenGoalPlanner={() => setShowPlannerModal(true)} />
+              <HeroSummary
+                onOpenGoalPlanner={() => setShowPlannerModal(true)}
+                onOpenAddModal={() => setShowAddModal(true)}
+              />
               <NextBestActionWidget
                 onNavigateTab={(t) => handleTabChange(t as MainTabType)}
                 onOpenGoalPlanner={() => setShowPlannerModal(true)}
@@ -120,28 +123,38 @@ function App() {
           {/* Tab 3: Domain Mastery */}
           {activeTab === 'domains' && (
             <div className="animate-in fade-in duration-200">
-              <DomainAnalysis onScheduleDrill={handleScheduleDrill} />
+              <DomainAnalysis
+                onScheduleDrill={handleScheduleDrill}
+                onOpenAddModal={() => setShowAddModal(true)}
+              />
             </div>
           )}
 
           {/* Tab 4: Score Insights & Pathways */}
           {activeTab === 'insights' && (
             <div className="animate-in fade-in duration-200">
-              <PerformanceInsights />
+              <PerformanceInsights onOpenAddModal={() => setShowAddModal(true)} />
             </div>
           )}
 
           {/* Tab 5: Test History */}
           {activeTab === 'history' && (
             <div className="animate-in fade-in duration-200">
-              <TestHistory onEditTest={handleOpenEdit} onOpenCompare={handleOpenCompare} />
+              <TestHistory
+                onEditTest={handleOpenEdit}
+                onOpenCompare={handleOpenCompare}
+                onOpenAddModal={() => setShowAddModal(true)}
+              />
             </div>
           )}
 
           {/* Tab 6: Full View (All sections stacked) */}
           {activeTab === 'all' && (
             <div className="space-y-5 animate-in fade-in duration-200">
-              <HeroSummary onOpenGoalPlanner={() => setShowPlannerModal(true)} />
+              <HeroSummary
+                onOpenGoalPlanner={() => setShowPlannerModal(true)}
+                onOpenAddModal={() => setShowAddModal(true)}
+              />
               <NextBestActionWidget
                 onNavigateTab={(t) => handleTabChange(t as MainTabType)}
                 onOpenGoalPlanner={() => setShowPlannerModal(true)}
@@ -151,9 +164,16 @@ function App() {
                 onOpenAddModal={() => setShowAddModal(true)}
                 onOpenCompare={handleOpenCompare}
               />
-              <PerformanceInsights />
-              <DomainAnalysis onScheduleDrill={handleScheduleDrill} />
-              <TestHistory onEditTest={handleOpenEdit} onOpenCompare={handleOpenCompare} />
+              <PerformanceInsights onOpenAddModal={() => setShowAddModal(true)} />
+              <DomainAnalysis
+                onScheduleDrill={handleScheduleDrill}
+                onOpenAddModal={() => setShowAddModal(true)}
+              />
+              <TestHistory
+                onEditTest={handleOpenEdit}
+                onOpenCompare={handleOpenCompare}
+                onOpenAddModal={() => setShowAddModal(true)}
+              />
             </div>
           )}
 

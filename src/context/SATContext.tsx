@@ -3,7 +3,7 @@ import { SATTest, DomainTrend } from '../types/sat';
 import { DOMAIN_META } from '../constants/domains';
 import { SAMPLE_TESTS } from '../constants/sampleData';
 
-const STORAGE_KEY = 'satTrackerTestsV2';
+const STORAGE_KEY = 'satTrackerTestsV3';
 const TARGET_KEY = 'satTrackerTargetScore';
 
 interface SATContextType {
@@ -44,16 +44,17 @@ export const SATProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [tests, setTests] = useState<SATTest[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
+      if (saved !== null) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
     } catch (e) {
       console.error('Failed to load tests from local storage', e);
     }
-    return SAMPLE_TESTS;
+    // Default state of the website is empty
+    return [];
   });
 
   const [targetScore, setTargetScoreState] = useState<number>(() => {
@@ -221,6 +222,8 @@ export const SATProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         rw,
         math,
         notes: item.notes || '',
+        moduleRouting: item.moduleRouting,
+        mistakes: item.mistakes,
         domains: item.domains || {},
         createdAt: item.createdAt || Date.now()
       });

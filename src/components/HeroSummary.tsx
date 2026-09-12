@@ -42,8 +42,11 @@ function StatCard({
   );
 }
 
-export const HeroSummary: React.FC<{ onOpenGoalPlanner?: () => void }> = ({ onOpenGoalPlanner }) => {
-  const { latestTest, previousTest, personalBest, superscore, scoreDelta, targetScore } = useSAT();
+export const HeroSummary: React.FC<{
+  onOpenGoalPlanner?: () => void;
+  onOpenAddModal?: () => void;
+}> = ({ onOpenGoalPlanner, onOpenAddModal }) => {
+  const { latestTest, previousTest, personalBest, superscore, scoreDelta, targetScore, tests, resetToSample } = useSAT();
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return 'Date not set';
@@ -294,6 +297,40 @@ export const HeroSummary: React.FC<{ onOpenGoalPlanner?: () => void }> = ({ onOp
           )}
         </div>
       </div>
+
+      {/* Empty State Onboarding Callout */}
+      {tests.length === 0 && (
+        <div className="mt-5 p-4 sm:p-5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div className="text-sm font-black text-white flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>Get Started with Your Practice Tracker</span>
+            </div>
+            <p className="text-xs text-white/80 mt-1 max-w-xl leading-relaxed">
+              Your tracker starts empty. Log your practice test scores to chart your personal journey, or load <strong>4 sample Bluebook tests</strong> to preview score jumps, plateau triage, and adaptive routing analytics.
+            </p>
+          </div>
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            <button
+              type="button"
+              onClick={resetToSample}
+              className="px-3.5 py-2 text-xs font-black text-[#182235] bg-amber-300 hover:bg-amber-200 rounded-xl transition-all shadow-md cursor-pointer flex items-center gap-1.5 active:scale-95"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-900" />
+              <span>Load 4 Sample Tests</span>
+            </button>
+            {onOpenAddModal && (
+              <button
+                type="button"
+                onClick={onOpenAddModal}
+                className="px-3.5 py-2 text-xs font-bold text-white bg-white/15 hover:bg-white/25 border border-white/25 rounded-xl transition-all cursor-pointer active:scale-95"
+              >
+                + Add Practice Test
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 };

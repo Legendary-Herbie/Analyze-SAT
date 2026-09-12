@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, Star, Zap, BarChart2, Target } from 'lucide-react';
+import { AlertTriangle, Star, Zap, BarChart2, Target, Sparkles } from 'lucide-react';
 import { useSAT } from '../context/SATContext';
 
 function InsightCard({
@@ -112,8 +112,10 @@ function SectionInsightsCard({
   );
 }
 
-export const PerformanceInsights: React.FC = () => {
-  const { domainTrends, tests, latestTest, averageScore, superscore } = useSAT();
+export const PerformanceInsights: React.FC<{
+  onOpenAddModal?: () => void;
+}> = ({ onOpenAddModal }) => {
+  const { domainTrends, tests, latestTest, averageScore, superscore, resetToSample } = useSAT();
 
   const domainWithData = domainTrends.filter(dt => dt.latestScore != null);
   const mostImproved = [...domainWithData]
@@ -140,8 +142,35 @@ export const PerformanceInsights: React.FC = () => {
       </div>
 
       {!hasInsights ? (
-        <div className="p-8 text-sm text-[#6f7b90] dark:text-slate-400 text-center">
-          Add at least one test to generate performance insights.
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-[#eef2f7] dark:bg-slate-800 flex items-center justify-center mb-3 text-[#2c4160] dark:text-indigo-400">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <h3 className="text-sm font-extrabold text-[#182235] dark:text-slate-100">
+            Performance Insights Awaiting Data
+          </h3>
+          <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-1 max-w-sm">
+            Add your first practice test or load our 4 sample tests to unlock automated strengths, priority growth areas, and score trajectory analysis.
+          </p>
+          <div className="flex items-center gap-2.5 mt-4 flex-wrap justify-center">
+            <button
+              type="button"
+              onClick={resetToSample}
+              className="px-4 py-2 text-xs font-extrabold text-[#182235] bg-amber-300 hover:bg-amber-200 rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5 active:scale-95"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-900" />
+              <span>Load 4 Sample Tests</span>
+            </button>
+            {onOpenAddModal && (
+              <button
+                type="button"
+                onClick={onOpenAddModal}
+                className="px-4 py-2 text-xs font-bold text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 hover:bg-[#f6f8fb] dark:hover:bg-slate-700 rounded-xl transition-all cursor-pointer"
+              >
+                + Add Practice Test
+              </button>
+            )}
+          </div>
         </div>
       ) : (
         <div className="p-5 space-y-5">

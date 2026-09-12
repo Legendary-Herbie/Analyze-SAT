@@ -410,19 +410,22 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
           <p className="text-xs text-[#6f7b90] dark:text-slate-400 max-w-sm mt-1 mb-4">
             Record a test score or load the official Bluebook test dataset to see score trajectory charts and automatic callouts.
           </p>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 flex-wrap justify-center">
             <button
+              type="button"
               onClick={resetToSample}
-              className="px-4 py-2 text-xs font-bold text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 rounded-xl hover:bg-slate-50 transition-colors shadow-sm cursor-pointer"
+              className="px-4 py-2 text-xs font-extrabold text-[#182235] bg-amber-300 hover:bg-amber-200 rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5 active:scale-95"
             >
-              Load Sample Bluebook Tests
+              <Sparkles className="w-3.5 h-3.5 text-amber-900" />
+              <span>Load 4 Sample Tests</span>
             </button>
             {onOpenAddModal && (
               <button
+                type="button"
                 onClick={onOpenAddModal}
-                className="px-4 py-2 text-xs font-bold text-white bg-[#2c4160] dark:bg-indigo-600 rounded-xl hover:bg-[#243955] dark:hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
+                className="px-4 py-2 text-xs font-bold text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 hover:bg-[#f6f8fb] dark:hover:bg-slate-700 rounded-xl transition-all cursor-pointer"
               >
-                + Add First Test
+                + Add Practice Test
               </button>
             )}
           </div>
