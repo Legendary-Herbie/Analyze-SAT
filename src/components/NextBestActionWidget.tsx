@@ -46,7 +46,7 @@ export const NextBestActionWidget: React.FC<NextBestActionWidgetProps> = ({
 
   if (orderedTests.length === 0) {
     actionTitle = 'Record Your Baseline Score';
-    actionDescription = 'Add a practice test or import Bluebook review text to calibrate your study plan and target gap.';
+    actionDescription = 'Add a practice test or load sample tests to calibrate your study plan and target gap.';
     actionBadge = 'Step 1';
     actionBadgeColor = 'bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
     ctaText = 'Add First Test';

@@ -11,7 +11,6 @@ import { StudyPlanner } from './components/StudyPlanner';
 import { TestModal } from './components/TestModal';
 import { DataModal } from './components/DataModal';
 import { GoalPlannerModal } from './components/GoalPlannerModal';
-import { ScoreReportImporterModal } from './components/ScoreReportImporterModal';
 import { ScoreReportPrintView } from './components/ScoreReportPrintView';
 import { NextBestActionWidget } from './components/NextBestActionWidget';
 import { CompareTestsModal } from './components/CompareTestsModal';
@@ -33,7 +32,6 @@ function App() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDataModal, setShowDataModal] = useState(false);
   const [showPlannerModal, setShowPlannerModal] = useState(false);
-  const [showImporterModal, setShowImporterModal] = useState(false);
   const [showPrintReport, setShowPrintReport] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [compareTestAId, setCompareTestAId] = useState<string | null>(null);
@@ -84,7 +82,6 @@ function App() {
             onOpenAddModal={() => setShowAddModal(true)}
             onOpenDataModal={() => setShowDataModal(true)}
             onOpenPlannerModal={() => setShowPlannerModal(true)}
-            onOpenImporterModal={() => setShowImporterModal(true)}
             onOpenPrintReport={() => setShowPrintReport(true)}
             onOpenCompareModal={() => handleOpenCompare()}
           />
@@ -195,10 +192,6 @@ function App() {
         <GoalPlannerModal
           isOpen={showPlannerModal}
           onClose={() => setShowPlannerModal(false)}
-        />
-        <ScoreReportImporterModal
-          isOpen={showImporterModal}
-          onClose={() => setShowImporterModal(false)}
         />
         <ScoreReportPrintView
           isOpen={showPrintReport}

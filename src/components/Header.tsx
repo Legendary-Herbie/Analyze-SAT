@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, BarChart3, Database, Moon, Sun, Sparkles, Printer, ArrowLeftRight } from 'lucide-react';
+import { Plus, BarChart3, Database, Moon, Sun, Printer, ArrowLeftRight } from 'lucide-react';
 
 interface HeaderProps {
   onOpenAddModal: () => void;
   onOpenDataModal: () => void;
   onOpenPlannerModal: () => void;
-  onOpenImporterModal: () => void;
   onOpenPrintReport: () => void;
   onOpenCompareModal?: () => void;
 }
@@ -14,7 +13,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddModal,
   onOpenDataModal,
   onOpenPlannerModal,
-  onOpenImporterModal,
   onOpenPrintReport,
   onOpenCompareModal,
 }) => {
@@ -59,17 +57,6 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
-        {/* Smart Importer button */}
-        <button
-          onClick={onOpenImporterModal}
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 rounded-xl hover:bg-[#f6f8fb] dark:hover:bg-slate-700/80 transition-colors shadow-sm"
-          title="Paste Bluebook score report text"
-        >
-          <Sparkles className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-          <span className="hidden sm:inline">Import Report</span>
-          <span className="sm:hidden">Import</span>
-        </button>
-
         {/* Compare Tests */}
         {onOpenCompareModal && (
           <button
