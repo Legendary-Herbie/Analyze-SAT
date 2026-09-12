@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, BarChart3, Database, Moon, Sun, Sparkles, Printer } from 'lucide-react';
+import { Plus, BarChart3, Database, Moon, Sun, Sparkles, Printer, ArrowLeftRight } from 'lucide-react';
 
 interface HeaderProps {
   onOpenAddModal: () => void;
@@ -7,6 +7,7 @@ interface HeaderProps {
   onOpenPlannerModal: () => void;
   onOpenImporterModal: () => void;
   onOpenPrintReport: () => void;
+  onOpenCompareModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,6 +16,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenPlannerModal,
   onOpenImporterModal,
   onOpenPrintReport,
+  onOpenCompareModal,
 }) => {
   const [isDark, setIsDark] = useState<boolean>(() => {
     return (
@@ -67,6 +69,18 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="hidden sm:inline">Import Report</span>
           <span className="sm:hidden">Import</span>
         </button>
+
+        {/* Compare Tests */}
+        {onOpenCompareModal && (
+          <button
+            onClick={onOpenCompareModal}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 rounded-xl hover:bg-[#f6f8fb] dark:hover:bg-slate-700/80 transition-colors shadow-sm cursor-pointer"
+            title="Compare two practice tests side-by-side"
+          >
+            <ArrowLeftRight className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <span className="hidden sm:inline">Compare</span>
+          </button>
+        )}
 
         {/* Goal & Superscore Pathways */}
         <button

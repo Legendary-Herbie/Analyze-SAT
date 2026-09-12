@@ -112,42 +112,8 @@ function SectionInsightsCard({
   );
 }
 
-function ProgressToGoal({ current, target }: { current: number; target: number }) {
-  const pct = Math.min(100, Math.round((current / target) * 100));
-  const needed = Math.max(0, target - current);
-  const reached = current >= target;
-
-  return (
-    <div className="p-4 bg-[#f8fafc] dark:bg-slate-800/40 rounded-xl border border-[#e5e9f0] dark:border-slate-800">
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#6f7b90] dark:text-slate-400">
-          Progress to Target Score
-        </div>
-        <div className={`text-xs font-black ${reached ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#2c4160] dark:text-indigo-400'}`}>
-          {current} / {target}
-        </div>
-      </div>
-      <div className="w-full h-2.5 bg-[#eef1f5] dark:bg-slate-800 rounded-full overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-700 ${
-            reached ? 'bg-emerald-500' : 'bg-[#2c4160] dark:bg-indigo-500'
-          }`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <div className="text-xs text-[#6f7b90] dark:text-slate-400 mt-2 flex items-center justify-between">
-        <span>
-          {reached
-            ? 'Goal reached! Consider raising your target.'
-            : `${needed} more points needed to hit target (${pct}% achieved)`}
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export const PerformanceInsights: React.FC = () => {
-  const { domainTrends, tests, latestTest, averageScore, superscore, targetScore } = useSAT();
+  const { domainTrends, tests, latestTest, averageScore, superscore } = useSAT();
 
   const domainWithData = domainTrends.filter(dt => dt.latestScore != null);
   const mostImproved = [...domainWithData]
@@ -179,10 +145,6 @@ export const PerformanceInsights: React.FC = () => {
         </div>
       ) : (
         <div className="p-5 space-y-5">
-          {latestTest && targetScore && (
-            <ProgressToGoal current={latestTest.total} target={targetScore} />
-          )}
-
           {hasSectionData ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <SectionInsightsCard sectionLabel="Reading & Writing" sectionKey="rw" />

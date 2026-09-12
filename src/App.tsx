@@ -13,6 +13,8 @@ import { DataModal } from './components/DataModal';
 import { GoalPlannerModal } from './components/GoalPlannerModal';
 import { ScoreReportImporterModal } from './components/ScoreReportImporterModal';
 import { ScoreReportPrintView } from './components/ScoreReportPrintView';
+import { NextBestActionWidget } from './components/NextBestActionWidget';
+import { CompareTestsModal } from './components/CompareTestsModal';
 import { SATTest } from './types/sat';
 
 function App() {
@@ -33,6 +35,9 @@ function App() {
   const [showPlannerModal, setShowPlannerModal] = useState(false);
   const [showImporterModal, setShowImporterModal] = useState(false);
   const [showPrintReport, setShowPrintReport] = useState(false);
+  const [showCompareModal, setShowCompareModal] = useState(false);
+  const [compareTestAId, setCompareTestAId] = useState<string | null>(null);
+  const [compareTestBId, setCompareTestBId] = useState<string | null>(null);
   const [editingTest, setEditingTest] = useState<SATTest | null>(null);
 
   const handleTabChange = (tab: MainTabType) => {
@@ -47,6 +52,16 @@ function App() {
   const handleOpenEdit = (test: SATTest) => {
     setEditingTest(test);
     setShowAddModal(true);
+  };
+
+  const handleOpenCompare = (testAId?: string, testBId?: string) => {
+    if (testAId) {
+      setCompareTestAId(testAId);
+    }
+    if (testBId) {
+      setCompareTestBId(testBId);
+    }
+    setShowCompareModal(true);
   };
 
   const handleCloseTestModal = () => {
@@ -71,6 +86,7 @@ function App() {
             onOpenPlannerModal={() => setShowPlannerModal(true)}
             onOpenImporterModal={() => setShowImporterModal(true)}
             onOpenPrintReport={() => setShowPrintReport(true)}
+            onOpenCompareModal={() => handleOpenCompare()}
           />
 
           {/* Navigation Tabs for clean uncluttered layout */}
@@ -83,7 +99,14 @@ function App() {
           {activeTab === 'overview' && (
             <div className="space-y-5 animate-in fade-in duration-200">
               <HeroSummary onOpenGoalPlanner={() => setShowPlannerModal(true)} />
-              <ScoreTrendsChart onOpenAddModal={() => setShowAddModal(true)} />
+              <NextBestActionWidget
+                onNavigateTab={(t) => handleTabChange(t as MainTabType)}
+                onOpenGoalPlanner={() => setShowPlannerModal(true)}
+              />
+              <ScoreTrendsChart
+                onOpenAddModal={() => setShowAddModal(true)}
+                onOpenCompare={handleOpenCompare}
+              />
             </div>
           )}
 
@@ -111,7 +134,7 @@ function App() {
           {/* Tab 5: Test History */}
           {activeTab === 'history' && (
             <div className="animate-in fade-in duration-200">
-              <TestHistory onEditTest={handleOpenEdit} />
+              <TestHistory onEditTest={handleOpenEdit} onOpenCompare={handleOpenCompare} />
             </div>
           )}
 
@@ -119,11 +142,18 @@ function App() {
           {activeTab === 'all' && (
             <div className="space-y-5 animate-in fade-in duration-200">
               <HeroSummary onOpenGoalPlanner={() => setShowPlannerModal(true)} />
+              <NextBestActionWidget
+                onNavigateTab={(t) => handleTabChange(t as MainTabType)}
+                onOpenGoalPlanner={() => setShowPlannerModal(true)}
+              />
               <StudyPlanner />
-              <ScoreTrendsChart onOpenAddModal={() => setShowAddModal(true)} />
+              <ScoreTrendsChart
+                onOpenAddModal={() => setShowAddModal(true)}
+                onOpenCompare={handleOpenCompare}
+              />
               <PerformanceInsights />
               <DomainAnalysis onScheduleDrill={handleScheduleDrill} />
-              <TestHistory onEditTest={handleOpenEdit} />
+              <TestHistory onEditTest={handleOpenEdit} onOpenCompare={handleOpenCompare} />
             </div>
           )}
 
@@ -154,6 +184,19 @@ function App() {
           isOpen={showPrintReport}
           onClose={() => setShowPrintReport(false)}
         />
+        {showCompareModal && (
+          <CompareTestsModal
+            isOpen={showCompareModal}
+            onClose={() => {
+              setShowCompareModal(false);
+              setCompareTestAId(null);
+              setCompareTestBId(null);
+            }}
+            initialTestAId={compareTestAId}
+            initialTestBId={compareTestBId}
+            onOpenAddModal={() => setShowAddModal(true)}
+          />
+        )}
       </div>
     </SATProvider>
   );

@@ -26,9 +26,10 @@ export function parseBluebookReportText(rawText: string): ParsedScoreResult | nu
   let rw: number | null = null;
   let math: number | null = null;
 
-  // Patterns for total score
-  const totalMatch = text.match(/(?:Total\s*(?:Score)?:?|Overall:?|Composite:?)\s*(\d{3,4})/i) ||
-                     text.match(/(\d{3,4})\s*(?:Total\s*Score|Total|Overall)/i);
+  // Patterns for total score (handles "Total Score\n1420", "Score: 1420", "Total 1420")
+  const totalMatch = text.match(/(?:Total\s*(?:Score)?|Overall|Composite)[:\s\t\n]+(\d{3,4})\b/i) ||
+                     text.match(/\b(\d{3,4})[\s\t\n]+(?:Total\s*Score|Total|Overall|Composite)\b/i) ||
+                     text.match(/\b(?:Score|Total):\s*(\d{4})\b/i);
   if (totalMatch) {
     const val = parseInt(totalMatch[1], 10);
     if (val >= 400 && val <= 1600) {
@@ -37,9 +38,9 @@ export function parseBluebookReportText(rawText: string): ParsedScoreResult | nu
     }
   }
 
-  // Patterns for R&W score
-  const rwMatch = text.match(/(?:Reading\s*(?:and|&)\s*Writing|RW|Reading\s*Writing|EBRW|ERW):?\s*(\d{3})/i) ||
-                  text.match(/(\d{3})\s*(?:Reading\s*(?:and|&)\s*Writing|RW|EBRW)/i);
+  // Patterns for R&W score (handles "Reading and Writing\n680", "RW: 680", "Reading & Writing 680")
+  const rwMatch = text.match(/(?:Reading\s*(?:and|&)\s*Writing|RW|Reading\s*Writing|EBRW|ERW)[:\s\t\n]+(\d{3})\b/i) ||
+                  text.match(/\b(\d{3})[\s\t\n]+(?:Reading\s*(?:and|&)\s*Writing|RW|EBRW|ERW)\b/i);
   if (rwMatch) {
     const val = parseInt(rwMatch[1], 10);
     if (val >= 200 && val <= 800) {
@@ -48,14 +49,37 @@ export function parseBluebookReportText(rawText: string): ParsedScoreResult | nu
     }
   }
 
-  // Patterns for Math score
-  const mathMatch = text.match(/(?:Math(?:ematics)?):?\s*(\d{3})/i) ||
-                    text.match(/(\d{3})\s*(?:Math(?:ematics)?)/i);
+  // Patterns for Math score (handles "Math\n740", "Math: 740", "Mathematics 740")
+  const mathMatch = text.match(/(?:Math(?:ematics)?|M)[:\s\t\n]+(\d{3})\b/i) ||
+                    text.match(/\b(\d{3})[\s\t\n]+(?:Math(?:ematics)?)\b/i);
   if (mathMatch) {
     const val = parseInt(mathMatch[1], 10);
     if (val >= 200 && val <= 800) {
       math = val;
       detected.push(`Math: ${val}`);
+    }
+  }
+
+  // Fallback: If only 3 standalone 3-4 digit numbers exist in text, check if 2 sum to the 3rd
+  if (!total || !rw || !math) {
+    const allNums = Array.from(text.matchAll(/\b([2-8]\d0|1[0-5]\d0|1600)\b/g)).map(m => parseInt(m[1], 10));
+    const totals = allNums.filter(n => n >= 600 && n <= 1600);
+    const sections = allNums.filter(n => n >= 200 && n <= 800);
+
+    for (const t of totals) {
+      for (let i = 0; i < sections.length; i++) {
+        for (let j = i + 1; j < sections.length; j++) {
+          if (sections[i] + sections[j] === t) {
+            if (!total) total = t;
+            if (!rw) rw = sections[i];
+            if (!math) math = sections[j];
+            detected.push(`Auto-reconciled: ${rw} R&W + ${math} Math = ${total} Total`);
+            break;
+          }
+        }
+        if (total && rw && math) break;
+      }
+      if (total && rw && math) break;
     }
   }
 

@@ -23,6 +23,17 @@ export interface ModuleRoutingData {
   mathModule2Correct?: number | null;
 }
 
+export type MistakeReason = 'content' | 'careless' | 'time' | 'misread';
+
+export interface MistakeEntry {
+  id: string;
+  questionNumber?: string;
+  section: SATSection;
+  domainId?: string;
+  reason: MistakeReason;
+  notes: string;
+}
+
 export interface SATTest {
   id: string;
   name: string;
@@ -34,6 +45,7 @@ export interface SATTest {
   notes?: string;
   domains: Record<string, DomainScoreData>;
   moduleRouting?: ModuleRoutingData;
+  mistakes?: MistakeEntry[];
   createdAt?: number;
 }
 

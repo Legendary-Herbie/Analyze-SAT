@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, Minus, ChevronDown, Lightbulb, History, Sparkles, Calendar } from 'lucide-react';
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  ChevronDown,
+  ChevronUp,
+  Lightbulb,
+  History,
+  Sparkles,
+  Calendar,
+  Flame,
+  CheckCircle2
+} from 'lucide-react';
 import { useSAT } from '../context/SATContext';
 import { DomainTrend } from '../types/sat';
 
@@ -374,6 +386,7 @@ function DomainCard({
 export const DomainAnalysis: React.FC<{ onScheduleDrill?: (domainId: string) => void }> = ({ onScheduleDrill }) => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [manualDoubleSize, setManualDoubleSize] = useState<boolean | null>(null);
+  const [isGridCollapsed, setIsGridCollapsed] = useState(false);
   const { domainTrends, latestTest } = useSAT();
 
   const filtered = domainTrends.filter(dt => {
@@ -382,6 +395,17 @@ export const DomainAnalysis: React.FC<{ onScheduleDrill?: (domainId: string) => 
   });
 
   const hasAny = filtered.length > 0;
+
+  // Identify top high-leverage domains (priority or developing)
+  const priorityDomains = [...domainTrends]
+    .filter(d => d.latestScore != null)
+    .sort((a, b) => (a.latestScore ?? 800) - (b.latestScore ?? 800))
+    .slice(0, 2);
+
+  // Identify top strength
+  const topStrength = [...domainTrends]
+    .filter(d => d.latestScore != null)
+    .sort((a, b) => (b.latestScore ?? 0) - (a.latestScore ?? 0))[0];
 
   // When a section tab ('rw' or 'math') is selected, the card size is twice the size (double size).
   // Users can also toggle manual double size if desired.
@@ -394,8 +418,62 @@ export const DomainAnalysis: React.FC<{ onScheduleDrill?: (domainId: string) => 
   };
 
   return (
-    <section className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-card transition-all">
-      <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
+    <section className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-card transition-all space-y-5">
+      {/* High-Leverage Scannable Summary Banner */}
+      {hasAny && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 rounded-xl bg-[#f8fafc] dark:bg-slate-800/50 border border-[#e5e9f0] dark:border-slate-700/70">
+          <div className="md:col-span-2 flex flex-col justify-between">
+            <div className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">
+              <Flame className="w-3.5 h-3.5 text-amber-500" />
+              Highest-Leverage Target Areas
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+              {priorityDomains.map(pd => (
+                <div
+                  key={pd.domain.id}
+                  className="p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 flex items-center justify-between"
+                >
+                  <div>
+                    <span className="text-xs font-black text-[#182235] dark:text-white block truncate">
+                      {pd.domain.name}
+                    </span>
+                    <span className="text-[10px] font-semibold text-[#6f7b90] dark:text-slate-400">
+                      Score: {pd.latestScore} · {pd.assessment}
+                    </span>
+                  </div>
+                  {onScheduleDrill && (
+                    <button
+                      type="button"
+                      onClick={() => onScheduleDrill(pd.domain.id)}
+                      className="text-[10px] font-extrabold text-[#2c4160] dark:text-indigo-400 hover:text-indigo-600 bg-[#f0f4f9] dark:bg-slate-700 px-2 py-1 rounded-md transition-colors shrink-0 ml-2"
+                    >
+                      Drill
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-between p-3 rounded-lg bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700">
+            <div className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+              Top Domain Asset
+            </div>
+            <div>
+              <div className="text-xs font-black text-[#182235] dark:text-white truncate">
+                {topStrength ? topStrength.domain.name : 'All domains consistent'}
+              </div>
+              <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mt-0.5">
+                {topStrength ? `${topStrength.latestScore} (${topStrength.assessment})` : 'Solid performance'}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Header and Controls */}
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-base font-extrabold text-[#182235] dark:text-slate-100">Domain Analysis</h2>
@@ -422,7 +500,7 @@ export const DomainAnalysis: React.FC<{ onScheduleDrill?: (domainId: string) => 
               <button
                 key={f}
                 onClick={() => handleFilterChange(f)}
-                className={`text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all ${
+                className={`text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   filter === f
                     ? 'bg-[#2c4160] text-white dark:bg-indigo-600 shadow-xs'
                     : 'text-[#6f7b90] dark:text-slate-300 hover:text-[#182235] dark:hover:text-white'
@@ -436,14 +514,33 @@ export const DomainAnalysis: React.FC<{ onScheduleDrill?: (domainId: string) => 
           {/* Quick Size Toggle button */}
           <button
             onClick={() => setManualDoubleSize(!isDoubleSize)}
-            className={`text-xs font-bold px-3 py-2 rounded-xl border transition-all ${
+            className={`text-xs font-bold px-3 py-2 rounded-xl border transition-all cursor-pointer ${
               isDoubleSize
                 ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
                 : 'bg-white dark:bg-slate-800 text-[#6f7b90] dark:text-slate-300 border-[#e5e9f0] dark:border-slate-700 hover:border-[#c8d0db]'
             }`}
             title={isDoubleSize ? 'Switch to compact cards' : 'Switch to 2x double-size cards'}
           >
-            {isDoubleSize ? '2x Size Active' : '1x Size'}
+            {isDoubleSize ? '2x Size' : '1x Size'}
+          </button>
+
+          {/* Collapse/Expand full grid toggle */}
+          <button
+            onClick={() => setIsGridCollapsed(!isGridCollapsed)}
+            className="text-xs font-bold px-3 py-2 rounded-xl border border-[#e5e9f0] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#405978] dark:text-slate-300 hover:bg-[#f6f8fb] dark:hover:bg-slate-700/80 transition-all inline-flex items-center gap-1 cursor-pointer"
+            title={isGridCollapsed ? 'Expand all 8 domain cards' : 'Collapse grid to save vertical space'}
+          >
+            {isGridCollapsed ? (
+              <>
+                <span>Expand All (8)</span>
+                <ChevronDown className="w-3.5 h-3.5" />
+              </>
+            ) : (
+              <>
+                <span>Collapse Grid</span>
+                <ChevronUp className="w-3.5 h-3.5" />
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -456,6 +553,12 @@ export const DomainAnalysis: React.FC<{ onScheduleDrill?: (domainId: string) => 
         <div className="flex flex-col items-center justify-center h-28 gap-2 text-center">
           <p className="text-sm text-[#6f7b90] dark:text-slate-400">No domain details entered for this test.</p>
           <p className="text-xs text-[#b0bac8] dark:text-slate-500">Use "Domain Details" when adding a test to see this analysis.</p>
+        </div>
+      ) : isGridCollapsed ? (
+        <div className="p-4 rounded-xl border border-dashed border-[#e5e9f0] dark:border-slate-800 text-center">
+          <p className="text-xs text-[#6f7b90] dark:text-slate-400">
+            Domain cards are collapsed. Click <button onClick={() => setIsGridCollapsed(false)} className="text-indigo-600 dark:text-indigo-400 font-extrabold underline">Expand All</button> above to inspect individual domain mastery cards.
+          </p>
         </div>
       ) : (
         <div

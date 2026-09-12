@@ -1,5 +1,19 @@
 import React, { useState } from 'react';
-import { Trash2, ChevronDown, ChevronUp, Calendar, BookOpen, Edit2, Compass } from 'lucide-react';
+import {
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+  BookOpen,
+  Edit2,
+  Compass,
+  Check,
+  X,
+  SlidersHorizontal,
+  Layers,
+  AlertOctagon,
+  ArrowLeftRight
+} from 'lucide-react';
 import { useSAT } from '../context/SATContext';
 import { SATTest } from '../types/sat';
 import { DOMAIN_META } from '../constants/domains';
@@ -9,23 +23,147 @@ function TestRow({
   test,
   onRequestDelete,
   onEdit,
+  onOpenCompare,
   isBest,
+  isCompact,
 }: {
   test: SATTest;
   onRequestDelete: (test: SATTest) => void;
   onEdit?: (test: SATTest) => void;
+  onOpenCompare?: (testId?: string) => void;
   isBest: boolean;
+  isCompact?: boolean;
 }) {
+  const { updateTest } = useSAT();
   const [expanded, setExpanded] = useState(false);
+  const [isQuickEditing, setIsQuickEditing] = useState(false);
+
+  // Quick edit local states
+  const [quickName, setQuickName] = useState(test.name);
+  const [quickDate, setQuickDate] = useState(test.date);
+  const [quickTotal, setQuickTotal] = useState(String(test.total));
+  const [quickRw, setQuickRw] = useState(String(test.rw));
+  const [quickMath, setQuickMath] = useState(String(test.math));
+
   const hasDomains = Object.values(test.domains || {}).some(d => d?.score != null || d?.pct != null);
+  const hasMistakes = Boolean(test.mistakes && test.mistakes.length > 0);
+
   const dateStr = test.date
     ? new Date(test.date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
     : 'No date';
 
+  const handleSaveQuickEdit = () => {
+    const parsedRw = parseInt(quickRw, 10);
+    const parsedMath = parseInt(quickMath, 10);
+    const parsedTotal = parseInt(quickTotal, 10);
+
+    if (isNaN(parsedRw) || isNaN(parsedMath) || isNaN(parsedTotal)) return;
+
+    updateTest(test.id, {
+      name: quickName.trim() || test.name,
+      date: quickDate || test.date,
+      total: parsedTotal,
+      rw: parsedRw,
+      math: parsedMath,
+    });
+    setIsQuickEditing(false);
+  };
+
+  const handleCancelQuickEdit = () => {
+    setQuickName(test.name);
+    setQuickDate(test.date);
+    setQuickTotal(String(test.total));
+    setQuickRw(String(test.rw));
+    setQuickMath(String(test.math));
+    setIsQuickEditing(false);
+  };
+
+  const handleRwChange = (val: string) => {
+    setQuickRw(val);
+    const rwNum = parseInt(val, 10);
+    const mathNum = parseInt(quickMath, 10);
+    if (!isNaN(rwNum) && !isNaN(mathNum)) {
+      setQuickTotal(String(rwNum + mathNum));
+    }
+  };
+
+  const handleMathChange = (val: string) => {
+    setQuickMath(val);
+    const mathNum = parseInt(val, 10);
+    const rwNum = parseInt(quickRw, 10);
+    if (!isNaN(rwNum) && !isNaN(mathNum)) {
+      setQuickTotal(String(rwNum + mathNum));
+    }
+  };
+
+  if (isQuickEditing) {
+    return (
+      <div className="p-3 bg-amber-50/80 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800/60">
+        <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-2 flex items-center justify-between">
+          <span>Quick Inline Edit</span>
+          <span className="text-[9px] font-normal text-amber-700 dark:text-amber-400">Press checkmark to save</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 items-center">
+          <input
+            type="text"
+            value={quickName}
+            onChange={e => setQuickName(e.target.value)}
+            className="sm:col-span-2 form-input text-xs py-1 px-2"
+            placeholder="Test Name"
+          />
+          <input
+            type="date"
+            value={quickDate}
+            onChange={e => setQuickDate(e.target.value)}
+            className="form-input text-xs py-1 px-2"
+          />
+          <div className="flex items-center gap-1.5 sm:col-span-2">
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-bold text-slate-500">RW:</span>
+              <input
+                type="number"
+                value={quickRw}
+                onChange={e => handleRwChange(e.target.value)}
+                className="form-input text-xs py-1 px-1.5 w-16"
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-bold text-slate-500">M:</span>
+              <input
+                type="number"
+                value={quickMath}
+                onChange={e => handleMathChange(e.target.value)}
+                className="form-input text-xs py-1 px-1.5 w-16"
+              />
+            </div>
+            <div className="flex items-center gap-1 ml-auto">
+              <button
+                onClick={handleSaveQuickEdit}
+                className="p-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-xs cursor-pointer"
+                title="Save inline changes"
+              >
+                <Check className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={handleCancelQuickEdit}
+                className="p-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 transition-colors cursor-pointer"
+                title="Cancel inline edit"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div
-        className={`grid items-center gap-3 px-4 py-3 border-b border-[#f0f2f5] dark:border-slate-800 last:border-b-0 text-sm ${
+        className={`grid items-center gap-2 sm:gap-3 px-3 sm:px-4 ${
+          isCompact ? 'py-2 text-xs' : 'py-3 text-sm'
+        } border-b border-[#f0f2f5] dark:border-slate-800 last:border-b-0 ${
           isBest ? 'bg-emerald-50/40 dark:bg-emerald-950/20' : 'hover:bg-[#fafbfc] dark:hover:bg-slate-800/50'
         } transition-colors`}
         style={{ gridTemplateColumns: '1.7fr 0.6fr 0.6fr 0.6fr auto auto auto' }}
@@ -38,9 +176,14 @@ function TestRow({
                 BEST
               </span>
             )}
-            {test.moduleRouting?.rwModule2Difficulty === 'hard' && test.moduleRouting?.mathModule2Difficulty === 'hard' && (
+            {hasMistakes && (
+              <span className="text-[9px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-1.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 shrink-0">
+                {test.mistakes?.length} errors
+              </span>
+            )}
+            {!isCompact && test.moduleRouting?.rwModule2Difficulty === 'hard' && test.moduleRouting?.mathModule2Difficulty === 'hard' && (
               <span className="text-[9px] font-extrabold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 px-1.5 py-0.5 rounded-full shrink-0 border border-indigo-200 dark:border-indigo-800">
-                Hard M2 Unlocked
+                Hard M2
               </span>
             )}
           </div>
@@ -50,43 +193,61 @@ function TestRow({
             {test.source && <> · {test.source}</>}
           </div>
         </div>
-        <div className="font-extrabold text-[#182235] dark:text-white text-sm">{test.total}</div>
+        <div className="font-extrabold text-[#182235] dark:text-white">{test.total}</div>
         <div className="text-[#405978] dark:text-slate-300 font-semibold">{test.rw}</div>
         <div className="text-[#405978] dark:text-slate-300 font-semibold">{test.math}</div>
 
         <button
           onClick={() => setExpanded(e => !e)}
-          disabled={!hasDomains && !test.notes && !test.moduleRouting}
-          className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          title={hasDomains ? 'View domain details' : 'No domain data'}
+          disabled={!hasDomains && !test.notes && !test.moduleRouting && !hasMistakes}
+          className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+          title={hasDomains || hasMistakes ? 'View details & mistakes' : 'No domain data'}
         >
           {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
 
-        {onEdit && (
+        <div className="flex items-center gap-1">
+          {onOpenCompare && (
+            <button
+              onClick={() => onOpenCompare(test.id)}
+              className="text-[#6f7b90] dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              title="Compare this test with another"
+            >
+              <ArrowLeftRight className="w-3.5 h-3.5" />
+            </button>
+          )}
           <button
-            onClick={() => onEdit(test)}
-            className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
-            title="Edit test"
+            onClick={() => setIsQuickEditing(true)}
+            className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+            title="Inline quick-edit (name, date, scores)"
           >
-            <Edit2 className="w-3.5 h-3.5" />
+            <SlidersHorizontal className="w-3.5 h-3.5" />
           </button>
-        )}
+          {onEdit && (
+            <button
+              onClick={() => onEdit(test)}
+              className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              title="Open full edit modal"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
 
         <button
           onClick={() => onRequestDelete(test)}
-          className="text-[#6f7b90] dark:text-slate-400 hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40"
+          className="text-[#6f7b90] dark:text-slate-400 hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
           title="Delete test"
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {expanded && (hasDomains || test.notes || test.moduleRouting) && (
-        <div className="bg-[#fafbfc] dark:bg-slate-800/60 border-b border-[#f0f2f5] dark:border-slate-800 px-4 py-3">
+      {expanded && (hasDomains || test.notes || test.moduleRouting || hasMistakes) && (
+        <div className="bg-[#fafbfc] dark:bg-slate-800/60 border-b border-[#f0f2f5] dark:border-slate-800 px-4 py-3 space-y-3">
           {test.moduleRouting && (
-            <div className="flex items-center gap-2 mb-2 text-xs text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 p-2 rounded-lg border border-[#e5e9f0] dark:border-slate-700">
-              <Compass className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-2 text-xs text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 p-2 rounded-lg border border-[#e5e9f0] dark:border-slate-700">
+              <Compass className="w-3.5 h-3.5 shrink-0" />
               <span>
                 Adaptive Routing: R&W Module 2 (<strong>{test.moduleRouting.rwModule2Difficulty || 'Not set'}</strong>) · Math Module 2 (<strong>{test.moduleRouting.mathModule2Difficulty || 'Not set'}</strong>)
               </span>
@@ -94,9 +255,36 @@ function TestRow({
           )}
 
           {test.notes && (
-            <div className="mb-3 flex items-start gap-2 text-xs text-[#405978] dark:text-slate-300">
+            <div className="flex items-start gap-2 text-xs text-[#405978] dark:text-slate-300">
               <BookOpen className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[#6f7b90] dark:text-slate-400" />
               <span className="italic">{test.notes}</span>
+            </div>
+          )}
+
+          {hasMistakes && (
+            <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-[#e5e9f0] dark:border-slate-700">
+              <div className="flex items-center gap-1.5 text-xs font-black text-[#182235] dark:text-white mb-2">
+                <AlertOctagon className="w-3.5 h-3.5 text-amber-500" />
+                <span>Mistake Notebook ({test.mistakes?.length})</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {test.mistakes?.map((m, idx) => (
+                  <div
+                    key={m.id || idx}
+                    className="p-2 rounded-lg bg-[#f8fafc] dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 text-xs"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-extrabold text-[#182235] dark:text-white">
+                        {m.section === 'rw' ? 'R&W' : 'Math'} {m.questionNumber ? `Q${m.questionNumber}` : ''}
+                      </span>
+                      <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
+                        {m.reason}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-[#6f7b90] dark:text-slate-400">{m.notes}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -134,21 +322,51 @@ function TestRow({
   );
 }
 
-export const TestHistory: React.FC<{ onEditTest?: (test: SATTest) => void }> = ({ onEditTest }) => {
+export const TestHistory: React.FC<{
+  onEditTest?: (test: SATTest) => void;
+  onOpenCompare?: (testId?: string) => void;
+}> = ({ onEditTest, onOpenCompare }) => {
   const { orderedTests, deleteTest, personalBest } = useSAT();
   const [testToDelete, setTestToDelete] = useState<SATTest | null>(null);
-  const rows = [...orderedTests].reverse().slice(0, 10);
+  const [isCompact, setIsCompact] = useState(false);
+  const rows = [...orderedTests].reverse().slice(0, 12);
 
   return (
     <section className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-2xl shadow-card overflow-hidden">
-      <div className="px-5 pt-5 pb-3 border-b border-[#f0f2f5] dark:border-slate-800 flex items-center justify-between">
+      <div className="px-5 pt-4 pb-3 border-b border-[#f0f2f5] dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
         <div>
           <h2 className="text-base font-extrabold text-[#182235] dark:text-slate-100">Recent Tests</h2>
-          <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5">Your saved score history.</p>
+          <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5">Your saved score history and mistake triage.</p>
         </div>
-        <span className="text-xs font-bold text-[#6f7b90] dark:text-slate-300 bg-[#eef2f7] dark:bg-slate-800 px-2 py-1 rounded-lg">
-          {orderedTests.length} test{orderedTests.length !== 1 ? 's' : ''}
-        </span>
+        <div className="flex items-center gap-2">
+          {onOpenCompare && (
+            <button
+              type="button"
+              onClick={() => onOpenCompare()}
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50/80 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors shadow-xs cursor-pointer"
+              title="Compare any two tests side-by-side"
+            >
+              <ArrowLeftRight className="w-3.5 h-3.5" />
+              <span>Compare Tests</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setIsCompact(!isCompact)}
+            className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg border transition-colors cursor-pointer ${
+              isCompact
+                ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
+                : 'bg-white dark:bg-slate-800 text-[#6f7b90] dark:text-slate-300 border-[#e5e9f0] dark:border-slate-700 hover:bg-[#f6f8fb]'
+            }`}
+            title="Toggle compact table view"
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>{isCompact ? 'Compact View' : 'Standard'}</span>
+          </button>
+          <span className="text-xs font-bold text-[#6f7b90] dark:text-slate-300 bg-[#eef2f7] dark:bg-slate-800 px-2 py-1 rounded-lg">
+            {orderedTests.length} test{orderedTests.length !== 1 ? 's' : ''}
+          </span>
+        </div>
       </div>
 
       {rows.length === 0 ? (
@@ -177,13 +395,15 @@ export const TestHistory: React.FC<{ onEditTest?: (test: SATTest) => void }> = (
               test={test}
               onRequestDelete={setTestToDelete}
               onEdit={onEditTest}
+              onOpenCompare={onOpenCompare}
               isBest={test.total === personalBest}
+              isCompact={isCompact}
             />
           ))}
 
-          {orderedTests.length > 10 && (
+          {orderedTests.length > 12 && (
             <div className="px-4 py-2 text-center text-xs text-[#6f7b90] dark:text-slate-400">
-              Showing 10 most recent. Export to see all {orderedTests.length}.
+              Showing 12 most recent. Export to see all {orderedTests.length}.
             </div>
           )}
         </>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Sparkles, CheckCircle, AlertCircle, ArrowRight, Clipboard } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { X, Sparkles, CheckCircle, AlertCircle, ArrowRight, Clipboard, Upload } from 'lucide-react';
 import { parseBluebookReportText, ParsedScoreResult } from '../utils/scoreImporter';
 import { useSAT } from '../context/SATContext';
 
@@ -30,6 +30,8 @@ export const ScoreReportImporterModal: React.FC<ScoreReportImporterModalProps> =
   const [parsedResult, setParsedResult] = useState<ParsedScoreResult | null>(null);
   const [hasAttempted, setHasAttempted] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
@@ -48,6 +50,35 @@ export const ScoreReportImporterModal: React.FC<ScoreReportImporterModalProps> =
       setParsedResult(null);
       setHasAttempted(false);
     }
+  };
+
+  const handleFileUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (text) {
+        setPastedText(text);
+        handleParse(text);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
   };
 
   const handleLoadSample = () => {
@@ -108,24 +139,63 @@ export const ScoreReportImporterModal: React.FC<ScoreReportImporterModalProps> =
         <div className="overflow-y-auto px-6 py-5 space-y-4">
           <div className="flex items-center justify-between">
             <label className="text-xs font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
-              Paste Score Text or Bluebook Report
+              Paste Score Text or Upload Report
             </label>
-            <button
-              onClick={handleLoadSample}
-              className="inline-flex items-center gap-1 text-xs font-bold text-[#2c4160] dark:text-indigo-400 hover:underline"
-            >
-              <Clipboard className="w-3.5 h-3.5" />
-              Load sample report
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#2c4160] dark:text-indigo-400 hover:underline cursor-pointer"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                Upload file
+              </button>
+              <button
+                type="button"
+                onClick={handleLoadSample}
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#2c4160] dark:text-indigo-400 hover:underline cursor-pointer"
+              >
+                <Clipboard className="w-3.5 h-3.5" />
+                Load sample
+              </button>
+            </div>
           </div>
 
-          <textarea
-            value={pastedText}
-            onChange={handleTextChange}
-            placeholder="Paste your Bluebook review screen text here, for example:&#10;&#10;Bluebook Practice Test 5&#10;Total Score: 1420&#10;Reading and Writing: 680&#10;Math: 740&#10;Algebra: 12/13..."
-            rows={5}
-            className="form-input resize-y font-mono text-xs"
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".txt,.csv,.json,.log,.md"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                handleFileUpload(e.target.files[0]);
+              }
+            }}
+            className="hidden"
           />
+
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            className={`relative rounded-xl border-2 transition-all ${
+              isDragging
+                ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30'
+                : 'border-transparent'
+            }`}
+          >
+            <textarea
+              value={pastedText}
+              onChange={handleTextChange}
+              placeholder="Paste your Bluebook review screen text here, or drag and drop a report file:&#10;&#10;Bluebook Practice Test 5&#10;Total Score: 1420&#10;Reading and Writing: 680&#10;Math: 740&#10;Algebra: 12/13..."
+              rows={5}
+              className="form-input resize-y font-mono text-xs w-full"
+            />
+            {isDragging && (
+              <div className="absolute inset-0 flex items-center justify-center bg-indigo-500/10 dark:bg-indigo-950/40 rounded-xl pointer-events-none text-indigo-700 dark:text-indigo-300 font-bold text-xs">
+                Drop your report file to parse
+              </div>
+            )}
+          </div>
 
           {/* Parsing Feedback */}
           {hasAttempted && !parsedResult && (

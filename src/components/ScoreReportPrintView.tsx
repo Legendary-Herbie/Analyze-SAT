@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Printer, Target } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Printer, Target, Copy, Check } from 'lucide-react';
 import { useSAT } from '../context/SATContext';
 import { calculateSuperscorePathways } from '../utils/pathwayCalculator';
 
@@ -10,6 +10,7 @@ interface ScoreReportPrintViewProps {
 
 export const ScoreReportPrintView: React.FC<ScoreReportPrintViewProps> = ({ isOpen, onClose }) => {
   const { tests, orderedTests, latestTest, personalBest, averageScore, superscore, targetScore, domainTrends } = useSAT();
+  const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
@@ -25,6 +26,32 @@ export const ScoreReportPrintView: React.FC<ScoreReportPrintViewProps> = ({ isOp
     month: 'long',
     day: 'numeric'
   });
+
+  const generateShareableText = () => {
+    const lines = [
+      `📊 Digital SAT Progress Update`,
+      `Date: ${currentDateStr}`,
+      `• Latest Test: ${latestTest ? `${latestTest.total} (R&W: ${latestTest.rw}, Math: ${latestTest.math}) - ${latestTest.name}` : 'None logged'}`,
+      `• Superscore: ${superscore ? `${superscore.total} (R&W: ${superscore.rw}, Math: ${superscore.math})` : 'N/A'}`,
+      `• Personal Best: ${personalBest ?? '—'} | Average: ${averageScore ?? '—'}`,
+      `• Target Score: ${targetScore} (${Math.max(0, targetScore - (superscore?.total ?? latestTest?.total ?? 0))} pts to goal)`,
+      primaryPathway ? `• Priority Plan (${primaryPathway.name}): R&W Target ${primaryPathway.targetRW} (+${primaryPathway.deltaRW}), Math Target ${primaryPathway.targetMath} (+${primaryPathway.deltaMath})` : '',
+      `• Top Strength: ${domainTrends.find(d => d.assessment === 'Major strength')?.domain.name || 'Math/Reading'}`,
+      `• Top Focus Area: ${domainTrends.find(d => d.assessment === 'Priority area' || d.assessment === 'Developing')?.domain.name || 'All domains'}`,
+    ].filter(Boolean);
+
+    return lines.join('\n');
+  };
+
+  const handleCopyText = async () => {
+    try {
+      await navigator.clipboard.writeText(generateShareableText());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch (e) {
+      console.error('Failed to copy summary to clipboard', e);
+    }
+  };
 
   return (
     <div
@@ -44,15 +71,23 @@ export const ScoreReportPrintView: React.FC<ScoreReportPrintViewProps> = ({ isOp
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={handleCopyText}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-[#405978] dark:text-slate-300 bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 hover:bg-[#f6f8fb] dark:hover:bg-slate-700/80 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer"
+              title="Copy clean formatted summary text to paste into WhatsApp, Slack, or Email for tutor/parent"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              <span>{copied ? 'Summary Copied!' : 'Copy Summary Text'}</span>
+            </button>
+            <button
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold text-white bg-[#2c4160] hover:bg-[#243955] dark:bg-indigo-600 dark:hover:bg-indigo-700 rounded-xl transition-all shadow-sm active:scale-95"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold text-white bg-[#2c4160] hover:bg-[#243955] dark:bg-indigo-600 dark:hover:bg-indigo-700 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
             >
               <Printer className="w-4 h-4" />
               <span>Print / Save as PDF</span>
             </button>
             <button
               onClick={onClose}
-              className="w-9 h-9 rounded-xl bg-[#eef2f7] dark:bg-slate-800 hover:bg-[#e5e9f0] dark:hover:bg-slate-700 flex items-center justify-center transition-colors text-[#405978] dark:text-slate-300"
+              className="w-9 h-9 rounded-xl bg-[#eef2f7] dark:bg-slate-800 hover:bg-[#e5e9f0] dark:hover:bg-slate-700 flex items-center justify-center transition-colors text-[#405978] dark:text-slate-300 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
