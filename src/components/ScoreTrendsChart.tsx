@@ -341,19 +341,19 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-2xl p-5 shadow-card mb-5 space-y-5"
+      className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-card mb-3.5 sm:mb-5 space-y-3.5 sm:space-y-5"
     >
       {/* Header */}
       <motion.div variants={headerVariants} className="flex items-start justify-between flex-wrap gap-2">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-base font-extrabold text-[#182235] dark:text-slate-100 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <h2 className="text-sm sm:text-base font-extrabold text-[#182235] dark:text-slate-100 flex items-center gap-1.5 sm:gap-2">
+              <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600 dark:text-indigo-400" />
               Score Trends & Velocity
             </h2>
             {hasData && orderedTests.length > 1 && (
               <span
-                className={`inline-flex items-center gap-1 text-[11px] font-extrabold px-2 py-0.5 rounded-full border ${
+                className={`inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded-full border ${
                   scoreDelta > 0
                     ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
                     : scoreDelta < 0
@@ -368,28 +368,28 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
                 ) : (
                   <Minus className="w-3 h-3 stroke-[2.5]" />
                 )}
-                {scoreDelta > 0 ? `+${scoreDelta} pts overall` : scoreDelta < 0 ? `${scoreDelta} pts overall` : 'Steady'}
+                {scoreDelta > 0 ? `+${scoreDelta} pts` : scoreDelta < 0 ? `${scoreDelta} pts` : 'Steady'}
               </span>
             )}
           </div>
-          <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5">
+          <p className="text-[11px] sm:text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5">
             Track test trajectories with automated jump milestones and plateau triage.
           </p>
         </div>
 
         {/* Actionable Callout Summary Pills */}
         {hasData && orderedTests.length > 1 && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             {jumpsCount > 0 && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                 <Zap className="w-3 h-3" />
-                <span>{jumpsCount} {jumpsCount === 1 ? 'Jump' : 'Jumps'} (≥+40 pts)</span>
+                <span>{jumpsCount} {jumpsCount === 1 ? 'Jump' : 'Jumps'} (≥+40)</span>
               </span>
             )}
             {plateausCount > 0 && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+              <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                 <Pause className="w-3 h-3" />
-                <span>{plateausCount} {plateausCount === 1 ? 'Plateau' : 'Plateaus'} (≤±15 pts)</span>
+                <span>{plateausCount} {plateausCount === 1 ? 'Plateau' : 'Plateaus'}</span>
               </span>
             )}
           </div>
@@ -433,33 +433,33 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
       ) : (
         <>
           {/* Dual Charts Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-5">
             {/* Total Score Chart */}
             <motion.div
               variants={chartCardVariants}
-              className="bg-[#f8fafc]/70 dark:bg-slate-800/40 p-3.5 rounded-xl border border-[#eef2f7] dark:border-slate-800 transition-all hover:border-indigo-100 dark:hover:border-slate-700"
+              className="bg-[#f8fafc]/70 dark:bg-slate-800/40 p-2.5 sm:p-3.5 rounded-xl border border-[#eef2f7] dark:border-slate-800 transition-all hover:border-indigo-100 dark:hover:border-slate-700"
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                 <div>
                   <div className="text-xs font-extrabold text-[#182235] dark:text-slate-200 flex items-center gap-1.5">
                     <span>Overall SAT Score</span>
                     {callouts.length > 0 && (
-                      <span className="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.2 rounded">
-                        Callout badges enabled
+                      <span className="text-[9px] sm:text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.2 rounded">
+                        Callouts
                       </span>
                     )}
                   </div>
-                  <div className="text-[11px] text-[#6f7b90] dark:text-slate-400">400–1600 composite scale</div>
+                  <div className="text-[10px] sm:text-[11px] text-[#6f7b90] dark:text-slate-400">400–1600 composite scale</div>
                 </div>
                 {lastScore && (
                   <div className="text-right">
                     <div className="text-xs font-black text-indigo-600 dark:text-indigo-400">{lastScore}</div>
-                    <div className="text-[10px] text-[#6f7b90] dark:text-slate-500">latest</div>
+                    <div className="text-[9px] sm:text-[10px] text-[#6f7b90] dark:text-slate-500">latest</div>
                   </div>
                 )}
               </div>
-              <ResponsiveContainer width="100%" height={210}>
-                <AreaChart data={totalData} margin={{ top: 26, right: 12, left: -10, bottom: 0 }}>
+              <ResponsiveContainer width="100%" height={185}>
+                <AreaChart data={totalData} margin={{ top: 22, right: 10, left: -12, bottom: 0 }}>
                   <defs>
                     <linearGradient id="totalGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.25} />
@@ -517,26 +517,26 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
             {/* Section Chart */}
             <motion.div
               variants={chartCardVariants}
-              className="bg-[#f8fafc]/70 dark:bg-slate-800/40 p-3.5 rounded-xl border border-[#eef2f7] dark:border-slate-800 transition-all hover:border-indigo-100 dark:hover:border-slate-700"
+              className="bg-[#f8fafc]/70 dark:bg-slate-800/40 p-2.5 sm:p-3.5 rounded-xl border border-[#eef2f7] dark:border-slate-800 transition-all hover:border-indigo-100 dark:hover:border-slate-700"
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                 <div>
                   <div className="text-xs font-extrabold text-[#182235] dark:text-slate-200">Section Scores</div>
-                  <div className="text-[11px] text-[#6f7b90] dark:text-slate-400">Reading & Writing vs Math (200–800)</div>
+                  <div className="text-[10px] sm:text-[11px] text-[#6f7b90] dark:text-slate-400">Reading & Writing vs Math (200–800)</div>
                 </div>
                 {orderedTests[orderedTests.length - 1] && (
-                  <div className="text-right flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-[#2c4160] dark:text-slate-300">
+                  <div className="text-right flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-[10px] sm:text-[11px] font-bold text-[#2c4160] dark:text-slate-300">
                       R&W: {orderedTests[orderedTests.length - 1].rw}
                     </span>
-                    <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400">
+                    <span className="text-[10px] sm:text-[11px] font-bold text-sky-600 dark:text-sky-400">
                       M: {orderedTests[orderedTests.length - 1].math}
                     </span>
                   </div>
                 )}
               </div>
-              <ResponsiveContainer width="100%" height={210}>
-                <LineChart data={totalData} margin={{ top: 12, right: 8, left: -10, bottom: 0 }}>
+              <ResponsiveContainer width="100%" height={185}>
+                <LineChart data={totalData} margin={{ top: 12, right: 8, left: -12, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} className="dark:opacity-20" />
                   <XAxis
                     dataKey="name"
@@ -555,7 +555,7 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
                   <Legend
                     iconType="circle"
                     iconSize={8}
-                    wrapperStyle={{ fontSize: 10, color: '#6f7b90', paddingTop: 4 }}
+                    wrapperStyle={{ fontSize: 10, color: '#6f7b90', paddingTop: 2 }}
                   />
                   <Line
                     type="monotone"
@@ -615,11 +615,11 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
 
               {/* Filter Tabs */}
               {callouts.length > 0 && (
-                <div className="flex items-center gap-1 bg-[#f6f8fb] dark:bg-slate-800/80 p-1 rounded-xl border border-[#e5e9f0] dark:border-slate-700/80 text-xs">
+                <div className="flex items-center gap-1 bg-[#f6f8fb] dark:bg-slate-800/80 p-1 rounded-xl border border-[#e5e9f0] dark:border-slate-700/80 text-xs overflow-x-auto no-scrollbar max-w-full">
                   <button
                     type="button"
                     onClick={() => setCalloutFilter('all')}
-                    className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                    className={`px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                       calloutFilter === 'all'
                         ? 'bg-white dark:bg-slate-900 text-[#182235] dark:text-white shadow-xs'
                         : 'text-[#6f7b90] dark:text-slate-400 hover:text-[#182235]'
@@ -631,7 +631,7 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
                     <button
                       type="button"
                       onClick={() => setCalloutFilter('jump')}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                      className={`px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                         calloutFilter === 'jump'
                           ? 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-xs'
                           : 'text-[#6f7b90] dark:text-slate-400 hover:text-emerald-600'
@@ -645,7 +645,7 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
                     <button
                       type="button"
                       onClick={() => setCalloutFilter('plateau')}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                      className={`px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                         calloutFilter === 'plateau'
                           ? 'bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 shadow-xs'
                           : 'text-[#6f7b90] dark:text-slate-400 hover:text-amber-600'
@@ -659,7 +659,7 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
                     <button
                       type="button"
                       onClick={() => setCalloutFilter('dip')}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                      className={`px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                         calloutFilter === 'dip'
                           ? 'bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 shadow-xs'
                           : 'text-[#6f7b90] dark:text-slate-400 hover:text-rose-600'
@@ -674,7 +674,7 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
 
             {/* Callouts Content */}
             {callouts.length === 0 ? (
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-center">
+              <div className="p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-center">
                 <p className="text-xs text-[#6f7b90] dark:text-slate-400">
                   {orderedTests.length < 2
                     ? 'Log at least 2 practice tests to view automatic momentum jumps and plateau analysis.'
@@ -682,13 +682,13 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
                 </p>
               </div>
             ) : filteredCallouts.length === 0 ? (
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-center">
+              <div className="p-3 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-center">
                 <p className="text-xs text-[#6f7b90] dark:text-slate-400">
                   No {calloutFilter === 'jump' ? 'point jumps' : calloutFilter === 'plateau' ? 'plateaus' : 'dips'} recorded in this filter.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3.5">
                 {filteredCallouts.map(callout => {
                   const isSelected = selectedCalloutId === callout.id;
 
@@ -714,7 +714,7 @@ export const ScoreTrendsChart: React.FC<ScoreTrendsChartProps> = ({ onOpenAddMod
                     <div
                       key={callout.id}
                       onClick={() => setSelectedCalloutId(prev => prev === callout.id ? null : callout.id)}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer ${borderClass} ${
+                      className={`p-3 sm:p-4 rounded-xl border transition-all cursor-pointer ${borderClass} ${
                         isSelected ? 'ring-2 ring-indigo-500 shadow-md scale-[1.01]' : 'hover:shadow-xs'
                       }`}
                     >

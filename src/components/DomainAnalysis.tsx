@@ -65,11 +65,11 @@ function SegmentBar({ score, isDoubleSize }: { score: number | null; isDoubleSiz
   const filled = score == null ? 0 : Math.max(0, Math.min(7, Math.round(((score - 200) / 600) * 7)));
   return (
     <div>
-      <div className={`flex gap-1.5 ${isDoubleSize ? 'mt-4' : 'mt-3'}`}>
+      <div className={`flex gap-1 sm:gap-1.5 ${isDoubleSize ? 'mt-2.5 sm:mt-4' : 'mt-2 sm:mt-3'}`}>
         {Array.from({ length: 7 }, (_, i) => (
           <div
             key={i}
-            className={`${isDoubleSize ? 'h-3.5 rounded' : 'h-2.5 rounded-sm'} flex-1 transition-all ${
+            className={`${isDoubleSize ? 'h-2.5 sm:h-3.5 rounded' : 'h-2 sm:h-2.5 rounded-sm'} flex-1 transition-all ${
               i < filled
                 ? 'bg-[#2c4160] dark:bg-indigo-500 shadow-xs'
                 : 'bg-[#eef1f5] dark:bg-slate-800'
@@ -77,7 +77,7 @@ function SegmentBar({ score, isDoubleSize }: { score: number | null; isDoubleSiz
           />
         ))}
       </div>
-      <div className={`flex justify-between ${isDoubleSize ? 'mt-1.5 text-xs font-bold' : 'mt-1 text-[10px]'} text-[#6f7b90] dark:text-slate-400`}>
+      <div className={`flex justify-between ${isDoubleSize ? 'mt-1 text-[10px] sm:text-xs font-bold' : 'mt-0.5 text-[9px] sm:text-[10px]'} text-[#6f7b90] dark:text-slate-400`}>
         <span>200</span>
         {isDoubleSize && <span>400</span>}
         {isDoubleSize && <span>600</span>}
@@ -107,39 +107,39 @@ function DomainCard({
   if (isDoubleSize) {
     const tip = DOMAIN_STRATEGIES[domain.id];
     return (
-      <div className="border border-[#e5e9f0] dark:border-slate-800 rounded-2xl p-6 hover:border-[#b6c4d4] dark:hover:border-slate-700 transition-all bg-white dark:bg-slate-900 shadow-sm flex flex-col justify-between space-y-5">
+      <div className="border border-[#e5e9f0] dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 lg:p-6 hover:border-[#b6c4d4] dark:hover:border-slate-700 transition-all bg-white dark:bg-slate-900 shadow-sm flex flex-col justify-between space-y-3.5 sm:space-y-4">
         <div>
           {/* Header Row */}
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start justify-between gap-2.5 sm:gap-4">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-lg font-black text-[#182235] dark:text-white leading-tight">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="text-sm sm:text-lg font-black text-[#182235] dark:text-white leading-tight">
                   {domain.name}
                 </span>
                 <span
-                  className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full border ${config.bg} ${config.text} ${config.border}`}
+                  className={`inline-flex items-center gap-1 text-[10px] sm:text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border ${config.bg} ${config.text} ${config.border}`}
                 >
-                  <span className={`w-2 h-2 rounded-full ${config.dot}`} />
+                  <span className={`w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full ${config.dot}`} />
                   {assessment}
                 </span>
               </div>
-              <div className="text-xs font-semibold text-[#405978] dark:text-indigo-400 mt-1">
+              <div className="text-[11px] sm:text-xs font-semibold text-[#405978] dark:text-indigo-400 mt-0.5 sm:mt-1">
                 {domain.section === 'rw' ? 'Reading & Writing Section' : 'Math Section'}
               </div>
               {domain.description && (
-                <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-2 leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-[#6f7b90] dark:text-slate-400 mt-1 sm:mt-2 leading-relaxed hidden sm:block">
                   {domain.description}
                 </p>
               )}
             </div>
 
-            <div className="text-right shrink-0 bg-[#f8fafc] dark:bg-slate-800/80 px-4 py-2.5 rounded-xl border border-[#e5e9f0] dark:border-slate-700">
-              <div className="text-2xl sm:text-[28px] font-black text-[#182235] dark:text-white">
+            <div className="text-right shrink-0 bg-[#f8fafc] dark:bg-slate-800/80 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl border border-[#e5e9f0] dark:border-slate-700">
+              <div className="text-xl sm:text-2xl lg:text-[28px] font-black text-[#182235] dark:text-white">
                 {latestPct != null ? `${latestPct}%` : '—'}
               </div>
               {latestScore != null && (
-                <div className="text-xs font-extrabold text-[#6f7b90] dark:text-slate-300 mt-0.5">
-                  Score: {latestScore} / 800
+                <div className="text-[10px] sm:text-xs font-extrabold text-[#6f7b90] dark:text-slate-300 mt-0.5">
+                  {latestScore}/800
                 </div>
               )}
             </div>
@@ -149,21 +149,21 @@ function DomainCard({
           {latestScore != null && <SegmentBar score={latestScore} isDoubleSize={true} />}
 
           {/* 3-Column Metrics Row */}
-          <div className="grid grid-cols-3 gap-3 mt-4">
-            <div className="bg-[#f8fafc] dark:bg-slate-800/60 p-3 rounded-xl border border-[#eef2f7] dark:border-slate-800">
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-3 mt-2.5 sm:mt-4">
+            <div className="bg-[#f8fafc] dark:bg-slate-800/60 p-2 sm:p-3 rounded-lg sm:rounded-xl border border-[#eef2f7] dark:border-slate-800">
+              <div className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
                 Average
               </div>
-              <div className="text-base font-black text-[#182235] dark:text-slate-100 mt-0.5">
+              <div className="text-sm sm:text-base font-black text-[#182235] dark:text-slate-100 mt-0.5">
                 {averageScore != null ? averageScore : '—'}
               </div>
             </div>
 
-            <div className="bg-[#f8fafc] dark:bg-slate-800/60 p-3 rounded-xl border border-[#eef2f7] dark:border-slate-800">
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
+            <div className="bg-[#f8fafc] dark:bg-slate-800/60 p-2 sm:p-3 rounded-lg sm:rounded-xl border border-[#eef2f7] dark:border-slate-800">
+              <div className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
                 Momentum
               </div>
-              <div className="text-base font-black mt-0.5 flex items-center gap-1">
+              <div className="text-sm sm:text-base font-black mt-0.5 flex items-center gap-0.5 sm:gap-1">
                 {delta !== null ? (
                   <span
                     className={`flex items-center gap-0.5 ${
@@ -175,26 +175,26 @@ function DomainCard({
                     }`}
                   >
                     {delta > 0 ? (
-                      <TrendingUp className="w-4 h-4" />
+                      <TrendingUp className="w-3.5 h-3.5" />
                     ) : delta < 0 ? (
-                      <TrendingDown className="w-4 h-4" />
+                      <TrendingDown className="w-3.5 h-3.5" />
                     ) : (
-                      <Minus className="w-4 h-4" />
+                      <Minus className="w-3.5 h-3.5" />
                     )}
                     {delta > 0 ? '+' : ''}
                     {delta}
                   </span>
                 ) : (
-                  <span className="text-xs text-[#6f7b90] dark:text-slate-400">First test</span>
+                  <span className="text-[10px] sm:text-xs text-[#6f7b90] dark:text-slate-400">First test</span>
                 )}
               </div>
             </div>
 
-            <div className="bg-[#f8fafc] dark:bg-slate-800/60 p-3 rounded-xl border border-[#eef2f7] dark:border-slate-800">
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
-                Tests Logged
+            <div className="bg-[#f8fafc] dark:bg-slate-800/60 p-2 sm:p-3 rounded-lg sm:rounded-xl border border-[#eef2f7] dark:border-slate-800">
+              <div className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
+                Tests
               </div>
-              <div className="text-base font-black text-[#182235] dark:text-slate-100 mt-0.5">
+              <div className="text-sm sm:text-base font-black text-[#182235] dark:text-slate-100 mt-0.5">
                 {scoresHistory.length}
               </div>
             </div>
@@ -202,28 +202,28 @@ function DomainCard({
         </div>
 
         {/* History and Tip Section */}
-        <div className="space-y-3 pt-2 border-t border-[#f0f2f5] dark:border-slate-800">
+        <div className="space-y-2.5 sm:space-y-3 pt-2 border-t border-[#f0f2f5] dark:border-slate-800">
           {scoresHistory.length > 1 && (
             <div>
-              <div className="flex items-center justify-between text-xs font-bold text-[#6f7b90] dark:text-slate-400 mb-2">
-                <span className="flex items-center gap-1.5">
-                  <History className="w-3.5 h-3.5 text-[#405978] dark:text-indigo-400" />
-                  Score Progression Across Practice Tests
+              <div className="flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#6f7b90] dark:text-slate-400 mb-1.5 sm:mb-2">
+                <span className="flex items-center gap-1 sm:gap-1.5">
+                  <History className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#405978] dark:text-indigo-400" />
+                  Progression Across Tests
                 </span>
-                <span className="text-[11px] text-[#405978] dark:text-indigo-400 font-semibold">
+                <span className="text-[10px] sm:text-[11px] text-[#405978] dark:text-indigo-400 font-semibold">
                   Latest: {latestScore}
                 </span>
               </div>
-              <div className="flex items-end gap-2.5 bg-[#f8fafc] dark:bg-slate-800/40 p-3 rounded-xl border border-[#eef2f7] dark:border-slate-800/80">
+              <div className="flex items-end gap-1.5 sm:gap-2.5 bg-[#f8fafc] dark:bg-slate-800/40 p-2 sm:p-3 rounded-xl border border-[#eef2f7] dark:border-slate-800/80">
                 {scoresHistory.map((s, i) => {
-                  const barH = Math.max(8, ((s - 200) / 600) * 56);
+                  const barH = Math.max(6, ((s - 200) / 600) * 44);
                   const isLast = i === scoresHistory.length - 1;
                   return (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-[#182235] dark:text-slate-300">{s}</span>
-                      <div className="w-full h-14 flex items-end justify-center">
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                      <span className="text-[9px] sm:text-[10px] font-bold text-[#182235] dark:text-slate-300">{s}</span>
+                      <div className="w-full h-11 sm:h-14 flex items-end justify-center">
                         <div
-                          className={`w-full max-w-[32px] rounded-t-md transition-all ${
+                          className={`w-full max-w-[28px] rounded-t-md transition-all ${
                             isLast
                               ? 'bg-[#2c4160] dark:bg-indigo-500 shadow-sm'
                               : 'bg-[#b6c4d4] dark:bg-slate-700'
@@ -231,7 +231,7 @@ function DomainCard({
                           style={{ height: barH }}
                         />
                       </div>
-                      <span className="text-[9px] font-semibold text-[#6f7b90] dark:text-slate-400">Test {i + 1}</span>
+                      <span className="text-[8px] sm:text-[9px] font-semibold text-[#6f7b90] dark:text-slate-400">T{i + 1}</span>
                     </div>
                   );
                 })}
@@ -240,10 +240,10 @@ function DomainCard({
           )}
 
           {tip && (
-            <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/40 text-xs text-amber-900 dark:text-amber-200">
-              <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/40 text-[11px] sm:text-xs text-amber-900 dark:text-amber-200">
+              <Lightbulb className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <div className="leading-relaxed">
-                <strong className="font-extrabold text-amber-950 dark:text-amber-300">dSAT High-Yield Strategy: </strong>
+                <strong className="font-extrabold text-amber-950 dark:text-amber-300">dSAT Strategy: </strong>
                 {tip}
               </div>
             </div>
@@ -251,17 +251,17 @@ function DomainCard({
 
           {/* Action Row: Schedule drill directly */}
           {onScheduleDrill && (
-            <div className="flex items-center justify-between pt-2 border-t border-[#f0f2f5] dark:border-slate-800">
-              <span className="text-[11px] text-[#6f7b90] dark:text-slate-400">
+            <div className="flex items-center justify-between pt-1.5 sm:pt-2 border-t border-[#f0f2f5] dark:border-slate-800">
+              <span className="text-[10px] sm:text-[11px] text-[#6f7b90] dark:text-slate-400">
                 Status: <strong className="text-[#182235] dark:text-slate-200">{assessment}</strong>
               </span>
               <button
                 type="button"
                 onClick={() => onScheduleDrill(domain.id)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold text-[#2c4160] dark:text-indigo-300 bg-[#f0f4f9] dark:bg-slate-800 hover:bg-[#e2eaf4] dark:hover:bg-slate-700 rounded-xl transition-all shadow-xs cursor-pointer active:scale-95"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-extrabold text-[#2c4160] dark:text-indigo-300 bg-[#f0f4f9] dark:bg-slate-800 hover:bg-[#e2eaf4] dark:hover:bg-slate-700 rounded-lg sm:rounded-xl transition-all shadow-xs cursor-pointer active:scale-95"
               >
-                <Calendar className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                <span>Schedule Study Drill</span>
+                <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-600 dark:text-indigo-400" />
+                <span>Schedule Drill</span>
               </button>
             </div>
           )}
@@ -272,29 +272,29 @@ function DomainCard({
 
   // Compact 1x card layout (when 'All' is selected)
   return (
-    <div className="border border-[#e5e9f0] dark:border-slate-800 rounded-xl p-4 hover:border-[#c8d0db] dark:hover:border-slate-700 transition-colors bg-white dark:bg-slate-900">
-      <div className="flex items-start justify-between gap-3">
+    <div className="border border-[#e5e9f0] dark:border-slate-800 rounded-xl p-3 sm:p-4 hover:border-[#c8d0db] dark:hover:border-slate-700 transition-colors bg-white dark:bg-slate-900">
+      <div className="flex items-start justify-between gap-2.5">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-extrabold text-[#182235] dark:text-slate-100">{domain.name}</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <span className="text-xs sm:text-sm font-extrabold text-[#182235] dark:text-slate-100">{domain.name}</span>
             <span
-              className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${config.bg} ${config.text} ${config.border}`}
+              className={`inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full border ${config.bg} ${config.text} ${config.border}`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
               {assessment}
             </span>
           </div>
-          <div className="text-[11px] text-[#6f7b90] dark:text-slate-400 mt-1">
+          <div className="text-[10px] sm:text-[11px] text-[#6f7b90] dark:text-slate-400 mt-0.5">
             {domain.section === 'rw' ? 'Reading & Writing' : 'Math'}
           </div>
         </div>
 
         <div className="text-right shrink-0">
-          <div className="text-2xl font-black text-[#182235] dark:text-white">
+          <div className="text-xl sm:text-2xl font-black text-[#182235] dark:text-white">
             {latestPct != null ? `${latestPct}%` : '—'}
           </div>
           {latestScore != null && (
-            <div className="text-[11px] text-[#6f7b90] dark:text-slate-400 font-semibold mt-0.5">
+            <div className="text-[10px] sm:text-[11px] text-[#6f7b90] dark:text-slate-400 font-semibold">
               Score: {latestScore}
             </div>
           )}
@@ -303,8 +303,8 @@ function DomainCard({
 
       {latestScore != null && <SegmentBar score={latestScore} isDoubleSize={false} />}
 
-      <div className="flex items-center justify-between mt-3 text-xs text-[#6f7b90] dark:text-slate-400 flex-wrap gap-2">
-        <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center justify-between mt-2.5 sm:mt-3 text-[11px] sm:text-xs text-[#6f7b90] dark:text-slate-400 flex-wrap gap-1.5">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           {averageScore != null && (
             <span>
               Avg: <strong className="text-[#182235] dark:text-slate-200">{averageScore}</strong>
@@ -312,7 +312,7 @@ function DomainCard({
           )}
           {delta !== null && (
             <span
-              className={`flex items-center gap-1 font-bold ${
+              className={`flex items-center gap-0.5 font-bold ${
                 delta > 0
                   ? 'text-emerald-600 dark:text-emerald-400'
                   : delta < 0
@@ -328,7 +328,7 @@ function DomainCard({
                 <Minus className="w-3 h-3" />
               )}
               {delta > 0 ? '+' : ''}
-              {delta} pts
+              {delta}
             </span>
           )}
           {scoresHistory.length > 1 && (
@@ -345,7 +345,7 @@ function DomainCard({
           <button
             type="button"
             onClick={() => onScheduleDrill(domain.id)}
-            className="inline-flex items-center gap-1 text-[11px] font-extrabold text-[#2c4160] dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 bg-[#f0f4f9] dark:bg-slate-800 hover:bg-[#e2eaf4] dark:hover:bg-slate-700/80 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-extrabold text-[#2c4160] dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 bg-[#f0f4f9] dark:bg-slate-800 hover:bg-[#e2eaf4] dark:hover:bg-slate-700/80 px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg transition-colors cursor-pointer"
             title={`Schedule a practice drill for ${domain.name}`}
           >
             <Calendar className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
@@ -355,24 +355,24 @@ function DomainCard({
       </div>
 
       {expanded && scoresHistory.length > 1 && (
-        <div className="mt-3 pt-3 border-t border-[#f0f2f5] dark:border-slate-800">
-          <div className="text-[10px] text-[#6f7b90] dark:text-slate-400 font-bold uppercase tracking-wider mb-2">
+        <div className="mt-2.5 pt-2.5 border-t border-[#f0f2f5] dark:border-slate-800">
+          <div className="text-[9px] sm:text-[10px] text-[#6f7b90] dark:text-slate-400 font-bold uppercase tracking-wider mb-1.5">
             Score History
           </div>
           <div className="flex items-end gap-1.5">
             {scoresHistory.map((s, i) => {
-              const barH = Math.max(4, ((s - 200) / 600) * 48);
+              const barH = Math.max(4, ((s - 200) / 600) * 40);
               const isLast = i === scoresHistory.length - 1;
               return (
-                <div key={i} className="flex flex-col items-center gap-1">
-                  <span className="text-[9px] text-[#6f7b90] dark:text-slate-400">{s}</span>
+                <div key={i} className="flex flex-col items-center gap-0.5">
+                  <span className="text-[8px] sm:text-[9px] text-[#6f7b90] dark:text-slate-400">{s}</span>
                   <div
-                    className={`w-5 rounded-t-sm ${
+                    className={`w-4 sm:w-5 rounded-t-sm ${
                       isLast ? 'bg-[#2c4160] dark:bg-indigo-500' : 'bg-[#b6c4d4] dark:bg-slate-700'
                     }`}
                     style={{ height: barH }}
                   />
-                  <span className="text-[8px] text-[#6f7b90] dark:text-slate-400">T{i + 1}</span>
+                  <span className="text-[7px] sm:text-[8px] text-[#6f7b90] dark:text-slate-400">T{i + 1}</span>
                 </div>
               );
             })}
@@ -421,22 +421,22 @@ export const DomainAnalysis: React.FC<{
   };
 
   return (
-    <section className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-card transition-all space-y-5">
+    <section className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 lg:p-6 shadow-card transition-all space-y-3.5 sm:space-y-5">
       {/* High-Leverage Scannable Summary Banner */}
       {hasAny && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 rounded-xl bg-[#f8fafc] dark:bg-slate-800/50 border border-[#e5e9f0] dark:border-slate-700/70">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-xl bg-[#f8fafc] dark:bg-slate-800/50 border border-[#e5e9f0] dark:border-slate-700/70">
           <div className="md:col-span-2 flex flex-col justify-between">
-            <div className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">
               <Flame className="w-3.5 h-3.5 text-amber-500" />
               Highest-Leverage Target Areas
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mt-1">
               {priorityDomains.map(pd => (
                 <div
                   key={pd.domain.id}
-                  className="p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 flex items-center justify-between"
+                  className="p-2 sm:p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 flex items-center justify-between"
                 >
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <span className="text-xs font-black text-[#182235] dark:text-white block truncate">
                       {pd.domain.name}
                     </span>
@@ -448,7 +448,7 @@ export const DomainAnalysis: React.FC<{
                     <button
                       type="button"
                       onClick={() => onScheduleDrill(pd.domain.id)}
-                      className="text-[10px] font-extrabold text-[#2c4160] dark:text-indigo-400 hover:text-indigo-600 bg-[#f0f4f9] dark:bg-slate-700 px-2 py-1 rounded-md transition-colors shrink-0 ml-2"
+                      className="text-[10px] font-extrabold text-[#2c4160] dark:text-indigo-400 hover:text-indigo-600 bg-[#f0f4f9] dark:bg-slate-700 px-2 py-0.5 sm:py-1 rounded-md transition-colors shrink-0 ml-2"
                     >
                       Drill
                     </button>
@@ -458,8 +458,8 @@ export const DomainAnalysis: React.FC<{
             </div>
           </div>
 
-          <div className="flex flex-col justify-between p-3 rounded-lg bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700">
-            <div className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1">
+          <div className="flex flex-col justify-between p-2.5 sm:p-3 rounded-lg bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700">
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
               Top Domain Asset
             </div>
@@ -467,7 +467,7 @@ export const DomainAnalysis: React.FC<{
               <div className="text-xs font-black text-[#182235] dark:text-white truncate">
                 {topStrength ? topStrength.domain.name : 'All domains consistent'}
               </div>
-              <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mt-0.5">
+              <div className="text-[10px] sm:text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mt-0.5">
                 {topStrength ? `${topStrength.latestScore} (${topStrength.assessment})` : 'Solid performance'}
               </div>
             </div>
@@ -476,18 +476,18 @@ export const DomainAnalysis: React.FC<{
       )}
 
       {/* Header and Controls */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
+      <div className="flex items-start justify-between gap-2.5 sm:gap-4 flex-wrap">
         <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-base font-extrabold text-[#182235] dark:text-slate-100">Domain Analysis</h2>
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <h2 className="text-sm sm:text-base font-extrabold text-[#182235] dark:text-slate-100">Domain Analysis</h2>
             {isDoubleSize && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                 <Sparkles className="w-3 h-3" />
                 2x Detailed View
               </span>
             )}
           </div>
-          <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5">
+          <p className="text-[11px] sm:text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5">
             {filter === 'all'
               ? 'Showing all 8 College Board dSAT domains across Reading & Writing and Math.'
               : filter === 'rw'
@@ -496,14 +496,14 @@ export const DomainAnalysis: React.FC<{
           </p>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap">
           {/* Filter Tabs */}
-          <div className="flex gap-1.5 p-1 bg-[#f6f8fb] dark:bg-slate-800/70 border border-[#e5e9f0] dark:border-slate-700 rounded-xl">
+          <div className="flex gap-1 p-0.5 sm:p-1 bg-[#f6f8fb] dark:bg-slate-800/70 border border-[#e5e9f0] dark:border-slate-700 rounded-lg sm:rounded-xl">
             {(['all', 'rw', 'math'] as FilterType[]).map(f => (
               <button
                 key={f}
                 onClick={() => handleFilterChange(f)}
-                className={`text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                className={`text-[11px] sm:text-xs font-extrabold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all cursor-pointer ${
                   filter === f
                     ? 'bg-[#2c4160] text-white dark:bg-indigo-600 shadow-xs'
                     : 'text-[#6f7b90] dark:text-slate-300 hover:text-[#182235] dark:hover:text-white'
@@ -517,31 +517,31 @@ export const DomainAnalysis: React.FC<{
           {/* Quick Size Toggle button */}
           <button
             onClick={() => setManualDoubleSize(!isDoubleSize)}
-            className={`text-xs font-bold px-3 py-2 rounded-xl border transition-all cursor-pointer ${
+            className={`text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border transition-all cursor-pointer ${
               isDoubleSize
                 ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
                 : 'bg-white dark:bg-slate-800 text-[#6f7b90] dark:text-slate-300 border-[#e5e9f0] dark:border-slate-700 hover:border-[#c8d0db]'
             }`}
             title={isDoubleSize ? 'Switch to compact cards' : 'Switch to 2x double-size cards'}
           >
-            {isDoubleSize ? '2x Size' : '1x Size'}
+            {isDoubleSize ? '2x' : '1x'}
           </button>
 
           {/* Collapse/Expand full grid toggle */}
           <button
             onClick={() => setIsGridCollapsed(!isGridCollapsed)}
-            className="text-xs font-bold px-3 py-2 rounded-xl border border-[#e5e9f0] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#405978] dark:text-slate-300 hover:bg-[#f6f8fb] dark:hover:bg-slate-700/80 transition-all inline-flex items-center gap-1 cursor-pointer"
+            className="text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border border-[#e5e9f0] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#405978] dark:text-slate-300 hover:bg-[#f6f8fb] dark:hover:bg-slate-700/80 transition-all inline-flex items-center gap-1 cursor-pointer"
             title={isGridCollapsed ? 'Expand all 8 domain cards' : 'Collapse grid to save vertical space'}
           >
             {isGridCollapsed ? (
               <>
-                <span>Expand All (8)</span>
-                <ChevronDown className="w-3.5 h-3.5" />
+                <span>Expand</span>
+                <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </>
             ) : (
               <>
-                <span>Collapse Grid</span>
-                <ChevronUp className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Collapse</span>
+                <ChevronUp className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </>
             )}
           </button>
@@ -592,7 +592,7 @@ export const DomainAnalysis: React.FC<{
         </div>
       ) : (
         <div
-          className={`grid gap-4 transition-all duration-300 ${
+          className={`grid gap-2.5 sm:gap-4 transition-all duration-300 ${
             isDoubleSize
               ? 'grid-cols-1 md:grid-cols-2'
               : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'

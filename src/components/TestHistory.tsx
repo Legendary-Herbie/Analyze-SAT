@@ -163,94 +163,94 @@ function TestRow({
     <>
       <div
         className={`grid items-center gap-2 sm:gap-3 px-3 sm:px-4 ${
-          isCompact ? 'py-2 text-xs' : 'py-3 text-sm'
+          isCompact ? 'py-1.5 sm:py-2 text-xs' : 'py-2.5 sm:py-3 text-xs sm:text-sm'
         } border-b border-[#f0f2f5] dark:border-slate-800 last:border-b-0 ${
           isBest ? 'bg-emerald-50/40 dark:bg-emerald-950/20' : 'hover:bg-[#fafbfc] dark:hover:bg-slate-800/50'
         } transition-colors`}
         style={{ gridTemplateColumns: '1.7fr 0.6fr 0.6fr 0.6fr auto auto auto' }}
       >
-        <div>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-bold text-[#182235] dark:text-slate-100 truncate">{test.name || 'Practice Test'}</span>
+        <div className="min-w-0 pr-1">
+          <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
+            <span className="font-bold text-[#182235] dark:text-slate-100 truncate text-xs sm:text-sm">{test.name || 'Practice Test'}</span>
             {isBest && (
-              <span className="text-[9px] font-extrabold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 px-1.5 py-0.5 rounded-full shrink-0">
+              <span className="text-[8px] sm:text-[9px] font-extrabold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 px-1 sm:px-1.5 py-0.5 rounded-full shrink-0">
                 BEST
               </span>
             )}
             {hasMistakes && (
-              <span className="text-[9px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-1.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 shrink-0">
-                {test.mistakes?.length} errors
+              <span className="text-[8px] sm:text-[9px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-1 sm:px-1.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 shrink-0">
+                {test.mistakes?.length} err
               </span>
             )}
             {!isCompact && test.moduleRouting?.rwModule2Difficulty === 'hard' && test.moduleRouting?.mathModule2Difficulty === 'hard' && (
-              <span className="text-[9px] font-extrabold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 px-1.5 py-0.5 rounded-full shrink-0 border border-indigo-200 dark:border-indigo-800">
+              <span className="text-[8px] sm:text-[9px] font-extrabold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 px-1 sm:px-1.5 py-0.5 rounded-full shrink-0 border border-indigo-200 dark:border-indigo-800 hidden sm:inline">
                 Hard M2
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1 mt-0.5 text-[10px] text-[#6f7b90] dark:text-slate-400">
-            <Calendar className="w-3 h-3" />
-            {dateStr}
-            {test.source && <> · {test.source}</>}
+          <div className="flex items-center gap-1 mt-0.5 text-[9px] sm:text-[10px] text-[#6f7b90] dark:text-slate-400">
+            <Calendar className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+            <span>{dateStr}</span>
+            {test.source && <span className="hidden sm:inline"> · {test.source}</span>}
           </div>
         </div>
-        <div className="font-extrabold text-[#182235] dark:text-white">{test.total}</div>
-        <div className="text-[#405978] dark:text-slate-300 font-semibold">{test.rw}</div>
-        <div className="text-[#405978] dark:text-slate-300 font-semibold">{test.math}</div>
+        <div className="font-extrabold text-[#182235] dark:text-white text-xs sm:text-sm">{test.total}</div>
+        <div className="text-[#405978] dark:text-slate-300 font-semibold text-xs sm:text-sm">{test.rw}</div>
+        <div className="text-[#405978] dark:text-slate-300 font-semibold text-xs sm:text-sm">{test.math}</div>
 
         <button
           onClick={() => setExpanded(e => !e)}
           disabled={!hasDomains && !test.notes && !test.moduleRouting && !hasMistakes}
-          className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+          className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer p-0.5"
           title={hasDomains || hasMistakes ? 'View details & mistakes' : 'No domain data'}
         >
-          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {expanded ? <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
         </button>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           {onOpenCompare && (
             <button
               onClick={() => onOpenCompare(test.id)}
-              className="text-[#6f7b90] dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              className="text-[#6f7b90] dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors p-1 rounded-md sm:rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               title="Compare this test with another"
             >
-              <ArrowLeftRight className="w-3.5 h-3.5" />
+              <ArrowLeftRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </button>
           )}
           <button
             onClick={() => setIsQuickEditing(true)}
-            className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+            className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors p-1 rounded-md sm:rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
             title="Inline quick-edit (name, date, scores)"
           >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <SlidersHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </button>
           {onEdit && (
             <button
               onClick={() => onEdit(test)}
-              className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              className="text-[#6f7b90] dark:text-slate-400 hover:text-[#2c4160] dark:hover:text-indigo-400 transition-colors p-1 rounded-md sm:rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               title="Open full edit modal"
             >
-              <Edit2 className="w-3.5 h-3.5" />
+              <Edit2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </button>
           )}
         </div>
 
         <button
           onClick={() => onRequestDelete(test)}
-          className="text-[#6f7b90] dark:text-slate-400 hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
+          className="text-[#6f7b90] dark:text-slate-400 hover:text-red-500 transition-colors p-1 rounded-md sm:rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
           title="Delete test"
         >
-          <Trash2 className="w-3.5 h-3.5" />
+          <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
         </button>
       </div>
 
       {expanded && (hasDomains || test.notes || test.moduleRouting || hasMistakes) && (
-        <div className="bg-[#fafbfc] dark:bg-slate-800/60 border-b border-[#f0f2f5] dark:border-slate-800 px-4 py-3 space-y-3">
+        <div className="bg-[#fafbfc] dark:bg-slate-800/60 border-b border-[#f0f2f5] dark:border-slate-800 px-3 sm:px-4 py-2.5 sm:py-3 space-y-2.5 sm:space-y-3">
           {test.moduleRouting && (
-            <div className="flex items-center gap-2 text-xs text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 p-2 rounded-lg border border-[#e5e9f0] dark:border-slate-700">
-              <Compass className="w-3.5 h-3.5 shrink-0" />
+            <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 p-2 rounded-lg border border-[#e5e9f0] dark:border-slate-700">
+              <Compass className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               <span>
-                Adaptive Routing: R&W Module 2 (<strong>{test.moduleRouting.rwModule2Difficulty || 'Not set'}</strong>) · Math Module 2 (<strong>{test.moduleRouting.mathModule2Difficulty || 'Not set'}</strong>)
+                Adaptive Routing: R&W M2 (<strong>{test.moduleRouting.rwModule2Difficulty || 'Not set'}</strong>) · Math M2 (<strong>{test.moduleRouting.mathModule2Difficulty || 'Not set'}</strong>)
               </span>
             </div>
           )}
@@ -334,47 +334,47 @@ export const TestHistory: React.FC<{
   const rows = [...orderedTests].reverse().slice(0, 12);
 
   return (
-    <section className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-2xl shadow-card overflow-hidden">
-      <div className="px-5 pt-4 pb-3 border-b border-[#f0f2f5] dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+    <section className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-xl sm:rounded-2xl shadow-card overflow-hidden">
+      <div className="px-3.5 sm:px-5 pt-3 sm:pt-4 pb-2.5 sm:pb-3 border-b border-[#f0f2f5] dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h2 className="text-base font-extrabold text-[#182235] dark:text-slate-100">Recent Tests</h2>
-          <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5">Your saved score history and mistake triage.</p>
+          <h2 className="text-sm sm:text-base font-extrabold text-[#182235] dark:text-slate-100">Recent Tests</h2>
+          <p className="text-[11px] sm:text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5">Your saved score history and mistake triage.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
           {onOpenCompare && (
             <button
               type="button"
               onClick={() => onOpenCompare()}
-              className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50/80 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-bold px-2 sm:px-2.5 py-1 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50/80 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors shadow-xs cursor-pointer"
               title="Compare any two tests side-by-side"
             >
-              <ArrowLeftRight className="w-3.5 h-3.5" />
-              <span>Compare Tests</span>
+              <ArrowLeftRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>Compare</span>
             </button>
           )}
           <button
             type="button"
             onClick={() => setIsCompact(!isCompact)}
-            className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg border transition-colors cursor-pointer ${
+            className={`inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold px-2 sm:px-2.5 py-1 rounded-lg border transition-colors cursor-pointer ${
               isCompact
                 ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
                 : 'bg-white dark:bg-slate-800 text-[#6f7b90] dark:text-slate-300 border-[#e5e9f0] dark:border-slate-700 hover:bg-[#f6f8fb]'
             }`}
             title="Toggle compact table view"
           >
-            <Layers className="w-3.5 h-3.5" />
-            <span>{isCompact ? 'Compact View' : 'Standard'}</span>
+            <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <span>{isCompact ? 'Compact' : 'Standard'}</span>
           </button>
-          <span className="text-xs font-bold text-[#6f7b90] dark:text-slate-300 bg-[#eef2f7] dark:bg-slate-800 px-2 py-1 rounded-lg">
-            {orderedTests.length} test{orderedTests.length !== 1 ? 's' : ''}
+          <span className="text-[10px] sm:text-xs font-bold text-[#6f7b90] dark:text-slate-300 bg-[#eef2f7] dark:bg-slate-800 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg">
+            {orderedTests.length}
           </span>
         </div>
       </div>
 
       {rows.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-[#eef2f7] dark:bg-slate-800 flex items-center justify-center mb-3 text-[#2c4160] dark:text-indigo-400">
-            <Calendar className="w-6 h-6" />
+        <div className="flex flex-col items-center justify-center py-10 sm:py-12 px-4 text-center">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#eef2f7] dark:bg-slate-800 flex items-center justify-center mb-3 text-[#2c4160] dark:text-indigo-400">
+            <Calendar className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <h3 className="text-sm font-extrabold text-[#182235] dark:text-slate-100">
             No Practice Tests Recorded Yet
@@ -382,11 +382,11 @@ export const TestHistory: React.FC<{
           <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-1 max-w-sm">
             Log your official College Board Bluebook mock test scores or load our 4 sample tests to see your progress table and mistake triage log.
           </p>
-          <div className="flex items-center gap-2.5 mt-4 flex-wrap justify-center">
+          <div className="flex items-center gap-2 mt-3.5 flex-wrap justify-center">
             <button
               type="button"
               onClick={resetToSample}
-              className="px-4 py-2 text-xs font-extrabold text-[#182235] bg-amber-300 hover:bg-amber-200 rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5 active:scale-95"
+              className="px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-extrabold text-[#182235] bg-amber-300 hover:bg-amber-200 rounded-lg sm:rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5 active:scale-95"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-900" />
               <span>Load 4 Sample Tests</span>
@@ -395,18 +395,18 @@ export const TestHistory: React.FC<{
               <button
                 type="button"
                 onClick={onOpenAddModal}
-                className="px-4 py-2 text-xs font-bold text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 hover:bg-[#f6f8fb] dark:hover:bg-slate-700 rounded-xl transition-all cursor-pointer"
+                className="px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-bold text-[#2c4160] dark:text-indigo-300 bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 hover:bg-[#f6f8fb] dark:hover:bg-slate-700 rounded-lg sm:rounded-xl transition-all cursor-pointer"
               >
-                + Add Practice Test
+                + Add Test
               </button>
             )}
           </div>
         </div>
       ) : (
-        <>
+        <div className="overflow-x-auto">
           {/* Header */}
           <div
-            className="grid px-4 py-2 text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400 border-b border-[#f0f2f5] dark:border-slate-800"
+            className="grid min-w-[480px] sm:min-w-0 px-3 sm:px-4 py-2 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400 border-b border-[#f0f2f5] dark:border-slate-800"
             style={{ gridTemplateColumns: '1.7fr 0.6fr 0.6fr 0.6fr auto auto auto' }}
           >
             <span>Test</span>
@@ -418,24 +418,26 @@ export const TestHistory: React.FC<{
             <span />
           </div>
 
-          {rows.map(test => (
-            <TestRow
-              key={test.id}
-              test={test}
-              onRequestDelete={setTestToDelete}
-              onEdit={onEditTest}
-              onOpenCompare={onOpenCompare}
-              isBest={test.total === personalBest}
-              isCompact={isCompact}
-            />
-          ))}
+          <div className="min-w-[480px] sm:min-w-0">
+            {rows.map(test => (
+              <TestRow
+                key={test.id}
+                test={test}
+                onRequestDelete={setTestToDelete}
+                onEdit={onEditTest}
+                onOpenCompare={onOpenCompare}
+                isBest={test.total === personalBest}
+                isCompact={isCompact}
+              />
+            ))}
+          </div>
 
           {orderedTests.length > 12 && (
-            <div className="px-4 py-2 text-center text-xs text-[#6f7b90] dark:text-slate-400">
+            <div className="px-4 py-2 text-center text-xs text-[#6f7b90] dark:text-slate-400 border-t border-[#f0f2f5] dark:border-slate-800">
               Showing 12 most recent. Export to see all {orderedTests.length}.
             </div>
           )}
-        </>
+        </div>
       )}
 
       {/* In-app reliable confirmation dialog */}

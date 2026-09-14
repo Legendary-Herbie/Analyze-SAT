@@ -31,13 +31,13 @@ function StatCard({
   icon: React.ElementType;
 }) {
   return (
-    <div className="bg-white/10 border border-white/10 rounded-2xl p-4 flex flex-col gap-1">
-      <div className="flex items-center gap-1.5 text-xs font-bold text-white/70 uppercase tracking-wider">
-        <Icon className="w-3.5 h-3.5" />
-        {label}
+    <div className="bg-white/10 border border-white/10 rounded-xl sm:rounded-2xl p-2.5 sm:p-4 flex flex-col gap-0.5 sm:gap-1">
+      <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-bold text-white/70 uppercase tracking-wider truncate">
+        <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+        <span className="truncate">{label}</span>
       </div>
-      <div className="text-lg sm:text-xl font-black text-white leading-tight">{value}</div>
-      {sub && <div className="text-[11px] text-white/60 mt-0.5">{sub}</div>}
+      <div className="text-base sm:text-xl font-black text-white leading-tight">{value}</div>
+      {sub && <div className="text-[10px] sm:text-[11px] text-white/60 mt-0.5 truncate">{sub}</div>}
     </div>
   );
 }
@@ -131,47 +131,47 @@ export const HeroSummary: React.FC<{
 
   return (
     <section
-      className="rounded-2xl p-6 mb-5 relative overflow-hidden"
+      className="rounded-xl sm:rounded-2xl p-3.5 sm:p-6 mb-3.5 sm:mb-5 relative overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #1a2636 0%, #2c4160 50%, #3a5373 100%)', boxShadow: '0 20px 40px rgba(26,38,54,0.18)' }}
     >
       {/* Background decoration */}
       <div className="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-white/[0.03] pointer-events-none" />
       <div className="absolute right-20 -bottom-8 w-32 h-32 rounded-full bg-white/[0.03] pointer-events-none" />
 
-      <div className="flex items-start justify-between gap-4 flex-wrap relative">
+      <div className="flex items-start justify-between gap-3 sm:gap-4 flex-wrap relative">
         <div>
-          <div className="text-[11px] font-extrabold uppercase tracking-widest text-white/60 mb-1">
+          <div className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-white/60 mb-0.5 sm:mb-1">
             Latest Score
           </div>
-          <div className="text-3xl sm:text-[38px] font-black text-white leading-none tracking-tight">
+          <div className="text-2xl sm:text-[38px] font-black text-white leading-none tracking-tight">
             {latestTest ? latestTest.total : '—'}
           </div>
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
-            <span className="text-sm text-white/60">
+          <div className="flex items-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2 flex-wrap">
+            <span className="text-xs sm:text-sm text-white/60">
               {latestTest
                 ? `${latestTest.name} · ${formatDate(latestTest.date)}`
                 : 'Add your first practice test'}
             </span>
             {latestTest?.source && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-white/70 font-semibold">
+              <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-white/70 font-semibold">
                 {latestTest.source}
               </span>
             )}
           </div>
           {scoreDelta !== null && (
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2">
               <DeltaBadge delta={scoreDelta} />
-              <span className="text-xs text-white/50">from previous test</span>
+              <span className="text-[10px] sm:text-xs text-white/50">from previous test</span>
             </div>
           )}
         </div>
 
-        <div className={`text-xs font-extrabold px-3.5 py-2 rounded-full border ${getTrendColor()} self-start mt-1`}>
+        <div className={`text-[11px] sm:text-xs font-extrabold px-2.5 sm:px-3.5 py-1 sm:py-2 rounded-full border ${getTrendColor()} self-start mt-0.5 sm:mt-1`}>
           {getTrendText()}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-3.5 sm:mt-6">
         <StatCard
           label="Reading & Writing"
           value={latestTest?.rw ?? '—'}
@@ -199,31 +199,31 @@ export const HeroSummary: React.FC<{
       </div>
 
       {/* Visual Target Score Progress Bar based on most recent practice test */}
-      <div className="mt-5 p-4 rounded-xl bg-white/[0.08] border border-white/15 backdrop-blur-xs">
-        <div className="flex items-center justify-between gap-3 flex-wrap mb-2.5">
+      <div className="mt-3.5 sm:mt-5 p-3 sm:p-4 rounded-xl bg-white/[0.08] border border-white/15 backdrop-blur-xs">
+        <div className="flex items-center justify-between gap-2.5 sm:gap-3 flex-wrap mb-2 sm:mb-2.5">
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0">
-              <Target className="w-4 h-4" />
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0">
+              <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-black uppercase tracking-wider text-white">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white">
                   Target Score Progress
                 </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/15 text-white/90">
-                  Latest Test: {latestTest ? latestTest.name : 'No test yet'}
+                <span className="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md bg-white/15 text-white/90">
+                  {latestTest ? latestTest.name : 'No test yet'}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="text-right">
-              <span className="text-sm font-black text-white">
+              <span className="text-xs sm:text-sm font-black text-white">
                 {latestScore > 0 ? latestScore : '—'}{' '}
-                <span className="text-xs font-normal text-white/60">/ {targetScore}</span>
+                <span className="text-[10px] sm:text-xs font-normal text-white/60">/ {targetScore}</span>
               </span>
-              <span className="text-xs font-black text-amber-300 ml-2">
+              <span className="text-[11px] sm:text-xs font-black text-amber-300 ml-1.5 sm:ml-2">
                 {progressPct}%
               </span>
             </div>
@@ -231,7 +231,7 @@ export const HeroSummary: React.FC<{
               <button
                 type="button"
                 onClick={onOpenGoalPlanner}
-                className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all cursor-pointer active:scale-95"
+                className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-extrabold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all cursor-pointer active:scale-95"
                 title="Customize your target composite score and view score pathways"
               >
                 <span>Adjust Goal</span>
@@ -242,7 +242,7 @@ export const HeroSummary: React.FC<{
         </div>
 
         {/* The Visual Progress Track */}
-        <div className="relative w-full h-3.5 bg-black/35 rounded-full overflow-hidden p-0.5 border border-white/15 shadow-inner">
+        <div className="relative w-full h-2.5 sm:h-3.5 bg-black/35 rounded-full overflow-hidden p-0.5 border border-white/15 shadow-inner">
           <div
             className={`h-full rounded-full transition-all duration-700 ease-out ${
               isGoalMet
@@ -263,25 +263,25 @@ export const HeroSummary: React.FC<{
         </div>
 
         {/* Progress details & breakdown */}
-        <div className="flex items-center justify-between text-xs text-white/75 mt-2 flex-wrap gap-2">
+        <div className="flex items-center justify-between text-[11px] sm:text-xs text-white/75 mt-2 flex-wrap gap-2">
           <div className="flex items-center gap-1.5">
             {isGoalMet ? (
               <button
                 type="button"
                 onClick={triggerConfetti}
-                className="inline-flex items-center gap-1.5 font-bold text-emerald-300 hover:text-emerald-200 bg-emerald-500/20 hover:bg-emerald-500/30 px-2.5 py-1 rounded-lg border border-emerald-400/30 transition-all cursor-pointer active:scale-95 shadow-xs group"
+                className="inline-flex items-center gap-1.5 font-bold text-emerald-300 hover:text-emerald-200 bg-emerald-500/20 hover:bg-emerald-500/30 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg border border-emerald-400/30 transition-all cursor-pointer active:scale-95 shadow-xs group"
                 title="Goal met! Click to celebrate with confetti"
               >
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
-                <Sparkles className="w-3.5 h-3.5 text-amber-300 group-hover:rotate-12 transition-transform" />
-                <span>Target achieved! Exceeded by +{pointsExceeded} pts on this sitting.</span>
-                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-white/20 text-white group-hover:bg-white/30 transition-colors">
+                <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-300" />
+                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300 group-hover:rotate-12 transition-transform" />
+                <span>Target achieved! Exceeded by +{pointsExceeded} pts.</span>
+                <span className="text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-white/20 text-white group-hover:bg-white/30 transition-colors">
                   🎉 Celebrate
                 </span>
               </button>
             ) : latestScore > 0 ? (
               <span>
-                <strong className="text-white font-extrabold">{pointsNeeded} pts</strong> needed to reach your target of {targetScore}.
+                <strong className="text-white font-extrabold">{pointsNeeded} pts</strong> needed to reach target {targetScore}.
               </span>
             ) : (
               <span>Log a test to see your score progress toward {targetScore}.</span>
@@ -289,7 +289,7 @@ export const HeroSummary: React.FC<{
           </div>
 
           {latestTest && (
-            <div className="flex items-center gap-3 text-[11px] text-white/70">
+            <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] text-white/70">
               <span>R&W: <strong className="text-white font-bold">{latestTest.rw}</strong>/800</span>
               <span className="text-white/40">•</span>
               <span>Math: <strong className="text-white font-bold">{latestTest.math}</strong>/800</span>
@@ -300,30 +300,30 @@ export const HeroSummary: React.FC<{
 
       {/* Empty State Onboarding Callout */}
       {tests.length === 0 && (
-        <div className="mt-5 p-4 sm:p-5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="mt-3.5 sm:mt-5 p-3.5 sm:p-5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <div className="text-sm font-black text-white flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-300" />
+            <div className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5 sm:gap-2">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
               <span>Get Started with Your Practice Tracker</span>
             </div>
-            <p className="text-xs text-white/80 mt-1 max-w-xl leading-relaxed">
+            <p className="text-[11px] sm:text-xs text-white/80 mt-0.5 sm:mt-1 max-w-xl leading-normal sm:leading-relaxed">
               Your tracker starts empty. Log your practice test scores to chart your personal journey, or load <strong>4 sample Bluebook tests</strong> to preview score jumps, plateau triage, and adaptive routing analytics.
             </p>
           </div>
-          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap w-full sm:w-auto">
             <button
               type="button"
               onClick={resetToSample}
-              className="px-3.5 py-2 text-xs font-black text-[#182235] bg-amber-300 hover:bg-amber-200 rounded-xl transition-all shadow-md cursor-pointer flex items-center gap-1.5 active:scale-95"
+              className="w-full sm:w-auto justify-center px-3 py-1.5 sm:px-3.5 sm:py-2 text-[11px] sm:text-xs font-black text-[#182235] bg-amber-300 hover:bg-amber-200 rounded-lg sm:rounded-xl transition-all shadow-md cursor-pointer flex items-center gap-1.5 active:scale-95"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-900" />
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-900" />
               <span>Load 4 Sample Tests</span>
             </button>
             {onOpenAddModal && (
               <button
                 type="button"
                 onClick={onOpenAddModal}
-                className="px-3.5 py-2 text-xs font-bold text-white bg-white/15 hover:bg-white/25 border border-white/25 rounded-xl transition-all cursor-pointer active:scale-95"
+                className="w-full sm:w-auto justify-center px-3 py-1.5 sm:px-3.5 sm:py-2 text-[11px] sm:text-xs font-bold text-white bg-white/15 hover:bg-white/25 border border-white/25 rounded-lg sm:rounded-xl transition-all cursor-pointer active:scale-95"
               >
                 + Add Practice Test
               </button>

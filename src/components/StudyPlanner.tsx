@@ -257,10 +257,10 @@ export const StudyPlanner: React.FC = () => {
   }, [gapAnalysis, tests.length]);
 
   return (
-    <section id="study-planner" className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-card transition-all mb-5">
+    <section id="study-planner" className="bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 lg:p-6 shadow-card transition-all mb-3.5 sm:mb-5">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="mb-4 px-4 py-2.5 rounded-xl bg-[#182235] dark:bg-slate-800 text-white text-xs font-semibold flex items-center justify-between shadow-lg border border-white/10 dark:border-slate-700 animate-in fade-in duration-200">
+        <div className="mb-3 sm:mb-4 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-[#182235] dark:bg-slate-800 text-white text-xs font-semibold flex items-center justify-between shadow-lg border border-white/10 dark:border-slate-700 animate-in fade-in duration-200">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>{toastMessage}</span>
@@ -275,29 +275,29 @@ export const StudyPlanner: React.FC = () => {
       )}
 
       {/* Header & Target SAT Countdown */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-[#f0f2f5] dark:border-slate-800">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 pb-3.5 sm:pb-5 border-b border-[#f0f2f5] dark:border-slate-800">
         <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-base sm:text-lg font-extrabold text-[#182235] dark:text-slate-100 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-[#2c4160] dark:text-indigo-400" />
-              Study Planner & Practice Scheduler
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <h2 className="text-sm sm:text-lg font-extrabold text-[#182235] dark:text-slate-100 flex items-center gap-1.5 sm:gap-2">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#2c4160] dark:text-indigo-400" />
+              Study Planner & Scheduler
             </h2>
-            <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+            <span className="text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
               Gap-Adaptive
             </span>
-            <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-              {daysRemaining > 0 ? `${daysRemaining} Days to Official Exam` : 'Exam Week!'}
+            <span className="text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              {daysRemaining > 0 ? `${daysRemaining} Days to Exam` : 'Exam Week!'}
             </span>
           </div>
-          <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-1">
+          <p className="text-[11px] sm:text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5 sm:mt-1">
             Schedule practice tests and focused study blocks calibrated to your current domain weaknesses.
           </p>
         </div>
 
         {/* Controls: SAT Date Selector & Actions */}
-        <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto justify-start lg:justify-end">
-          <div className="flex items-center gap-1.5 bg-[#f6f8fb] dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 rounded-xl px-2.5 py-1 text-xs">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap w-full lg:w-auto justify-start lg:justify-end">
+          <div className="flex items-center gap-1 sm:gap-1.5 bg-[#f6f8fb] dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 rounded-lg sm:rounded-xl px-2 sm:px-2.5 py-1 text-xs">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
               Exam:
             </span>
             <select
@@ -310,7 +310,7 @@ export const StudyPlanner: React.FC = () => {
                   setSelectedDateId(e.target.value);
                 }
               }}
-              className="text-xs font-bold text-[#2c4160] dark:text-slate-200 bg-transparent outline-none cursor-pointer"
+              className="text-[11px] sm:text-xs font-bold text-[#2c4160] dark:text-slate-200 bg-transparent outline-none cursor-pointer max-w-[130px] sm:max-w-none truncate"
             >
               {OFFICIAL_SAT_DATES.map(d => (
                 <option key={d.id} value={d.id}>
@@ -324,7 +324,7 @@ export const StudyPlanner: React.FC = () => {
                 type="date"
                 value={customDate}
                 onChange={e => setCustomDate(e.target.value)}
-                className="text-xs font-bold bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-700 rounded-lg px-2 py-0.5 outline-none text-[#182235] dark:text-slate-200"
+                className="text-xs font-bold bg-white dark:bg-slate-900 border border-[#e5e9f0] dark:border-slate-700 rounded-lg px-1.5 py-0.5 outline-none text-[#182235] dark:text-slate-200"
               />
             )}
           </div>
@@ -332,7 +332,7 @@ export const StudyPlanner: React.FC = () => {
           <button
             onClick={() => downloadCalendarFile(sessions)}
             disabled={sessions.length === 0}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#405978] dark:text-slate-300 bg-[#f6f8fb] dark:bg-slate-800 hover:bg-[#eef2f7] dark:hover:bg-slate-700 border border-[#e5e9f0] dark:border-slate-700 rounded-xl transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold text-[#405978] dark:text-slate-300 bg-[#f6f8fb] dark:bg-slate-800 hover:bg-[#eef2f7] dark:hover:bg-slate-700 border border-[#e5e9f0] dark:border-slate-700 rounded-lg sm:rounded-xl transition-all disabled:opacity-50"
             title="Export schedule to .ics calendar format (Google, Apple, Outlook)"
           >
             <Download className="w-3.5 h-3.5" />
@@ -341,43 +341,43 @@ export const StudyPlanner: React.FC = () => {
 
           <button
             onClick={() => handleOpenAddModal('study_block')}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-extrabold text-white bg-[#2c4160] hover:bg-[#243955] dark:bg-indigo-600 dark:hover:bg-indigo-700 rounded-xl transition-all shadow-sm active:scale-95"
+            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-extrabold text-white bg-[#2c4160] hover:bg-[#243955] dark:bg-indigo-600 dark:hover:bg-indigo-700 rounded-lg sm:rounded-xl transition-all shadow-sm active:scale-95"
           >
-            <Plus className="w-4 h-4" />
-            <span>Schedule Session</span>
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span>Schedule</span>
           </button>
         </div>
       </div>
 
       {/* Performance Gap & Study Allocation Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 my-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2.5 sm:gap-4 my-3.5 sm:my-5">
         {/* Card 1: Target Deficit & Recommended Weekly Hours */}
-        <div className="bg-[#f8fafc] dark:bg-slate-800/60 border border-[#e5e9f0] dark:border-slate-700 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-[#f8fafc] dark:bg-slate-800/60 border border-[#e5e9f0] dark:border-slate-700 rounded-xl p-3 sm:p-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
-                Weekly Study Recommendation
+                Weekly Recommendation
               </span>
               <span className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                 <Flame className="w-3 h-3 text-amber-500" />
                 {gapAnalysis.scoreGap > 0 ? `${gapAnalysis.scoreGap} pt gap` : 'Goal Hit!'}
               </span>
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
+            <div className="mt-1.5 sm:mt-2 flex items-baseline gap-2">
               <span className="text-xl sm:text-2xl font-black text-[#182235] dark:text-white">
                 {gapAnalysis.recommendedWeeklyHours} hrs
               </span>
               <span className="text-xs font-bold text-[#6f7b90] dark:text-slate-400">
-                / week recommended
+                / week
               </span>
             </div>
-            <p className="text-xs text-[#6f7b90] dark:text-slate-400 mt-1 leading-relaxed">
+            <p className="text-[11px] sm:text-xs text-[#6f7b90] dark:text-slate-400 mt-0.5 sm:mt-1 leading-relaxed">
               Based on your current {gapAnalysis.currentScore} composite vs {gapAnalysis.targetScore} target.
             </p>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-[#eef2f7] dark:border-slate-700/80">
-            <div className="flex items-center justify-between text-xs font-bold mb-1.5">
+          <div className="mt-2.5 sm:mt-3 pt-2 sm:pt-3 border-t border-[#eef2f7] dark:border-slate-700/80">
+            <div className="flex items-center justify-between text-xs font-bold mb-1 sm:mb-1.5">
               <span className="text-[#6f7b90] dark:text-slate-400">Currently Scheduled</span>
               <span className="text-[#182235] dark:text-slate-200">{scheduledHours} hrs</span>
             </div>
@@ -393,18 +393,18 @@ export const StudyPlanner: React.FC = () => {
         </div>
 
         {/* Card 2: Recommended Time Split (Math vs R&W) */}
-        <div className="bg-[#f8fafc] dark:bg-slate-800/60 border border-[#e5e9f0] dark:border-slate-700 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-[#f8fafc] dark:bg-slate-800/60 border border-[#e5e9f0] dark:border-slate-700 rounded-xl p-3 sm:p-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
-                Suggested Subject Balance
+                Subject Balance
               </span>
               <span className="text-[10px] font-bold text-[#405978] dark:text-indigo-400">
-                Based on score deficits
+                Based on deficits
               </span>
             </div>
 
-            <div className="mt-3 space-y-2">
+            <div className="mt-2 sm:mt-3 space-y-1.5 sm:space-y-2">
               <div className="flex items-center justify-between text-xs font-bold">
                 <span className="text-[#182235] dark:text-slate-200">
                   Math: {gapAnalysis.recommendedMathPercent}%
@@ -415,7 +415,7 @@ export const StudyPlanner: React.FC = () => {
               </div>
 
               {/* Visual Split Bar */}
-              <div className="w-full h-3 rounded-full overflow-hidden flex bg-slate-200 dark:bg-slate-700">
+              <div className="w-full h-2.5 sm:h-3 rounded-full overflow-hidden flex bg-slate-200 dark:bg-slate-700">
                 <div
                   className="bg-indigo-600 dark:bg-indigo-500 transition-all"
                   style={{ width: `${gapAnalysis.recommendedMathPercent}%` }}
@@ -428,14 +428,14 @@ export const StudyPlanner: React.FC = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between text-[11px] text-[#6f7b90] dark:text-slate-400 pt-1">
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-[#6f7b90] dark:text-slate-400 pt-0.5 sm:pt-1">
                 <span>Math Gap: +{gapAnalysis.mathGap} pts</span>
                 <span>R&W Gap: +{gapAnalysis.rwGap} pts</span>
               </div>
             </div>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-[#eef2f7] dark:border-slate-700/80 flex items-center justify-between text-xs">
+          <div className="mt-2.5 sm:mt-3 pt-2 sm:pt-3 border-t border-[#eef2f7] dark:border-slate-700/80 flex items-center justify-between text-xs">
             <span className="text-[#6f7b90] dark:text-slate-400">Active Test Pacing:</span>
             <span className="font-extrabold text-[#182235] dark:text-slate-200">
               1 Full Test every {daysRemaining > 30 ? '1-2 weeks' : '5-7 days'}
@@ -444,7 +444,7 @@ export const StudyPlanner: React.FC = () => {
         </div>
 
         {/* Card 3: Priority Domain Gaps (1-Click Drill Scheduling) */}
-        <div className="bg-[#f8fafc] dark:bg-slate-800/60 border border-[#e5e9f0] dark:border-slate-700 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-[#f8fafc] dark:bg-slate-800/60 border border-[#e5e9f0] dark:border-slate-700 rounded-xl p-3 sm:p-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400">
@@ -608,11 +608,11 @@ export const StudyPlanner: React.FC = () => {
       {/* Schedule Tabs & Interactive Session List */}
       <div>
         {/* Filter Navigation */}
-        <div className="flex items-center justify-between gap-3 border-b border-[#f0f2f5] dark:border-slate-800 pb-3 mb-4 flex-wrap">
-          <div className="flex items-center gap-1.5 p-1 bg-[#f6f8fb] dark:bg-slate-800/70 border border-[#e5e9f0] dark:border-slate-700 rounded-xl flex-wrap">
+        <div className="flex items-center justify-between gap-2.5 border-b border-[#f0f2f5] dark:border-slate-800 pb-2.5 sm:pb-3 mb-3 sm:mb-4 flex-wrap">
+          <div className="flex items-center gap-1 sm:gap-1.5 p-0.5 sm:p-1 bg-[#f6f8fb] dark:bg-slate-800/70 border border-[#e5e9f0] dark:border-slate-700 rounded-lg sm:rounded-xl overflow-x-auto max-w-full">
             <button
               onClick={() => setActiveTab('all')}
-              className={`text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all ${
+              className={`text-[11px] sm:text-xs font-extrabold px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg whitespace-nowrap transition-all cursor-pointer ${
                 activeTab === 'all'
                   ? 'bg-[#2c4160] text-white dark:bg-indigo-600 shadow-xs'
                   : 'text-[#6f7b90] dark:text-slate-300 hover:text-[#182235]'
@@ -622,7 +622,7 @@ export const StudyPlanner: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('upcoming')}
-              className={`text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all ${
+              className={`text-[11px] sm:text-xs font-extrabold px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg whitespace-nowrap transition-all cursor-pointer ${
                 activeTab === 'upcoming'
                   ? 'bg-[#2c4160] text-white dark:bg-indigo-600 shadow-xs'
                   : 'text-[#6f7b90] dark:text-slate-300 hover:text-[#182235]'
@@ -632,17 +632,17 @@ export const StudyPlanner: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('practice_test')}
-              className={`text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all ${
+              className={`text-[11px] sm:text-xs font-extrabold px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg whitespace-nowrap transition-all cursor-pointer ${
                 activeTab === 'practice_test'
                   ? 'bg-[#2c4160] text-white dark:bg-indigo-600 shadow-xs'
                   : 'text-[#6f7b90] dark:text-slate-300 hover:text-[#182235]'
               }`}
             >
-              Practice Tests ({sessions.filter(s => s.type === 'practice_test').length})
+              Tests ({sessions.filter(s => s.type === 'practice_test').length})
             </button>
             <button
               onClick={() => setActiveTab('study_block')}
-              className={`text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all ${
+              className={`text-[11px] sm:text-xs font-extrabold px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg whitespace-nowrap transition-all cursor-pointer ${
                 activeTab === 'study_block'
                   ? 'bg-[#2c4160] text-white dark:bg-indigo-600 shadow-xs'
                   : 'text-[#6f7b90] dark:text-slate-300 hover:text-[#182235]'
@@ -652,29 +652,29 @@ export const StudyPlanner: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('completed')}
-              className={`text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all ${
+              className={`text-[11px] sm:text-xs font-extrabold px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg whitespace-nowrap transition-all cursor-pointer ${
                 activeTab === 'completed'
                   ? 'bg-[#2c4160] text-white dark:bg-indigo-600 shadow-xs'
                   : 'text-[#6f7b90] dark:text-slate-300 hover:text-[#182235]'
               }`}
             >
-              Completed ({completedCount})
+              Done ({completedCount})
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="text-xs text-[#6f7b90] dark:text-slate-400 font-semibold">
-              {completedCount} of {sessions.length} sessions finished ({sessions.length ? Math.round((completedCount / sessions.length) * 100) : 0}%)
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <div className="text-[11px] sm:text-xs text-[#6f7b90] dark:text-slate-400 font-semibold">
+              {completedCount}/{sessions.length} finished ({sessions.length ? Math.round((completedCount / sessions.length) * 100) : 0}%)
             </div>
             {completedCount > 0 && (
               <button
                 type="button"
                 onClick={() => setShowClearConfirm(true)}
-                className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-bold inline-flex items-center gap-1 transition-colors cursor-pointer px-2 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40"
+                className="text-[11px] sm:text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-bold inline-flex items-center gap-1 transition-colors cursor-pointer px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40"
                 title="Remove finished sessions to keep schedule clean"
               >
                 <Trash2 className="w-3 h-3" />
-                Clear Finished ({completedCount})
+                Clear ({completedCount})
               </button>
             )}
           </div>
