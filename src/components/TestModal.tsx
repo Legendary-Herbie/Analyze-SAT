@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, ChevronUp, Zap, Compass } from 'lucide-react';
 import { useSAT } from '../context/SATContext';
-import { DOMAIN_META, TEST_SOURCES } from '../constants/domains';
+import { DOMAIN_META, TEST_SOURCES, calculateDomainScore } from '../constants/domains';
 import { SATTest } from '../types/sat';
 
 interface TestModalProps {
@@ -132,6 +132,29 @@ export const TestModal: React.FC<TestModalProps> = ({ isOpen, onClose, editTest 
     }));
   };
 
+  const handleAutoCalculateOmittedDomains = () => {
+    setForm(prev => {
+      const nextDomains = { ...prev.domains };
+      let anyUpdated = false;
+      for (const d of DOMAIN_META) {
+        const item = nextDomains[d.id];
+        const c = numOrNull(item.correct);
+        const t = numOrNull(item.total);
+        if (c !== null && t !== null && t > 0) {
+          const calcScore = calculateDomainScore(c, t);
+          const calcPct = Math.round((c / t) * 100);
+          nextDomains[d.id] = {
+            ...item,
+            pct: item.pct ? item.pct : String(calcPct),
+            score: item.score ? item.score : (calcScore !== null ? String(calcScore) : item.score),
+          };
+          anyUpdated = true;
+        }
+      }
+      return anyUpdated ? { ...prev, domains: nextDomains } : prev;
+    });
+  };
+
   const handlePresetSelect = (preset: string) => {
     setField('name', preset);
     setField('source', 'Bluebook Practice Test');
@@ -167,10 +190,14 @@ export const TestModal: React.FC<TestModalProps> = ({ isOpen, onClose, editTest 
       const correct = numOrNull(df.correct);
       const total = numOrNull(df.total);
       let pct = numOrNull(df.pct);
-      const score = numOrNull(df.score);
+      let score = numOrNull(df.score);
       // Auto-calc pct if missing
       if (pct === null && correct !== null && total !== null && total > 0) {
         pct = Math.round((correct / total) * 100);
+      }
+      // Calculate domain score when omitted: Domain Score = 200 + 600 * (Correct / Total)
+      if (score === null && correct !== null && total !== null && total > 0) {
+        score = calculateDomainScore(correct, total);
       }
       if ([correct, total, pct, score].some(v => v !== null)) {
         domains[d.id] = { correct, total, pct, score };
@@ -451,6 +478,25 @@ export const TestModal: React.FC<TestModalProps> = ({ isOpen, onClose, editTest 
 
               {showDomains && (
                 <div className="space-y-4 mt-3">
+                  {/* Calculation formula banner */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-2.5 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 rounded-xl text-xs text-indigo-950 dark:text-indigo-200">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider bg-indigo-200/70 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded">
+                        Auto-Formula
+                      </span>
+                      <span className="text-[11px] sm:text-xs">
+                        Domain Score = <strong className="font-bold">200 + 600 × (Correct / Total)</strong> when omitted
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAutoCalculateOmittedDomains}
+                      className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline underline-offset-2 shrink-0 cursor-pointer self-end sm:self-auto"
+                    >
+                      Fill omitted scores
+                    </button>
+                  </div>
+
                   {[
                     { label: 'Reading & Writing Domains', domains: rwSection },
                     { label: 'Math Domains', domains: mathSection },
@@ -459,62 +505,72 @@ export const TestModal: React.FC<TestModalProps> = ({ isOpen, onClose, editTest 
                       <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400 mb-1.5">
                         {label}
                       </div>
-                      <div className="border border-[#e5e9f0] dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-800">
-                        <div
-                          className="grid px-3 py-2 bg-[#f6f8fb] dark:bg-slate-900/60 border-b border-[#e5e9f0] dark:border-slate-700 text-[9px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400"
-                          style={{ gridTemplateColumns: '1.8fr repeat(4, 0.7fr)' }}
-                        >
-                          <span>Domain</span>
-                          <span>Correct</span>
-                          <span>Total</span>
-                          <span>Accuracy %</span>
-                          <span>Domain Score</span>
-                        </div>
-                        {domains.map(d => (
+                      <div className="border border-[#e5e9f0] dark:border-slate-700 rounded-xl overflow-x-auto bg-white dark:bg-slate-800">
+                        <div className="min-w-[460px]">
                           <div
-                            key={d.id}
-                            className="grid items-center px-3 py-2 border-b border-[#f0f2f5] dark:border-slate-700/60 last:border-b-0 gap-2"
+                            className="grid px-3 py-2 bg-[#f6f8fb] dark:bg-slate-900/60 border-b border-[#e5e9f0] dark:border-slate-700 text-[9px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400"
                             style={{ gridTemplateColumns: '1.8fr repeat(4, 0.7fr)' }}
                           >
-                            <span className="text-xs font-bold text-[#182235] dark:text-slate-200 truncate">
-                              {d.name}
-                            </span>
-                            <input
-                              type="number"
-                              min={0}
-                              placeholder="—"
-                              value={form.domains[d.id].correct}
-                              onChange={e => setDomainField(d.id, 'correct', e.target.value)}
-                              className="form-input-sm"
-                            />
-                            <input
-                              type="number"
-                              min={1}
-                              placeholder="—"
-                              value={form.domains[d.id].total}
-                              onChange={e => setDomainField(d.id, 'total', e.target.value)}
-                              className="form-input-sm"
-                            />
-                            <input
-                              type="number"
-                              min={0}
-                              max={100}
-                              placeholder="—"
-                              value={form.domains[d.id].pct}
-                              onChange={e => setDomainField(d.id, 'pct', e.target.value)}
-                              className="form-input-sm"
-                            />
-                            <input
-                              type="number"
-                              min={200}
-                              max={800}
-                              placeholder="—"
-                              value={form.domains[d.id].score}
-                              onChange={e => setDomainField(d.id, 'score', e.target.value)}
-                              className="form-input-sm"
-                            />
+                            <span>Domain</span>
+                            <span>Correct</span>
+                            <span>Total</span>
+                            <span>Accuracy %</span>
+                            <span>Domain Score</span>
                           </div>
-                        ))}
+                          {domains.map(d => {
+                            const cVal = numOrNull(form.domains[d.id].correct);
+                            const tVal = numOrNull(form.domains[d.id].total);
+                            const autoScore = calculateDomainScore(cVal, tVal);
+                            const autoPct = cVal !== null && tVal !== null && tVal > 0 ? Math.round((cVal / tVal) * 100) : null;
+                            return (
+                              <div
+                                key={d.id}
+                                className="grid items-center px-3 py-2 border-b border-[#f0f2f5] dark:border-slate-700/60 last:border-b-0 gap-2"
+                                style={{ gridTemplateColumns: '1.8fr repeat(4, 0.7fr)' }}
+                              >
+                                <span className="text-xs font-bold text-[#182235] dark:text-slate-200 truncate">
+                                  {d.name}
+                                </span>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  placeholder="—"
+                                  value={form.domains[d.id].correct}
+                                  onChange={e => setDomainField(d.id, 'correct', e.target.value)}
+                                  className="form-input-sm"
+                                />
+                                <input
+                                  type="number"
+                                  min={1}
+                                  placeholder="—"
+                                  value={form.domains[d.id].total}
+                                  onChange={e => setDomainField(d.id, 'total', e.target.value)}
+                                  className="form-input-sm"
+                                />
+                                <input
+                                  type="number"
+                                  min={0}
+                                  max={100}
+                                  placeholder={autoPct !== null ? `${autoPct}%` : '—'}
+                                  title={autoPct !== null && !form.domains[d.id].pct ? `Omitted: will auto-calculate to ${autoPct}%` : undefined}
+                                  value={form.domains[d.id].pct}
+                                  onChange={e => setDomainField(d.id, 'pct', e.target.value)}
+                                  className="form-input-sm"
+                                />
+                                <input
+                                  type="number"
+                                  min={200}
+                                  max={800}
+                                  placeholder={autoScore !== null ? `${autoScore} (auto)` : '—'}
+                                  title={autoScore !== null && !form.domains[d.id].score ? `Omitted: will auto-calculate to ${autoScore} via 200 + 600 × (${cVal}/${tVal})` : undefined}
+                                  value={form.domains[d.id].score}
+                                  onChange={e => setDomainField(d.id, 'score', e.target.value)}
+                                  className="form-input-sm font-semibold"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   ))}

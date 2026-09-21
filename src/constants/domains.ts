@@ -62,3 +62,59 @@ export const TEST_SOURCES = [
   'Erica Meltzer / College Panda',
   'Other'
 ];
+
+/**
+ * Calculates domain score based on College Board Digital SAT formula:
+ * Domain Score = 200 + 600 * (Correct / Total)
+ * Used to calculate domain scores when omitted.
+ */
+export function calculateDomainScore(
+  correct: number | null | undefined,
+  total: number | null | undefined
+): number | null {
+  if (
+    correct == null ||
+    total == null ||
+    total <= 0 ||
+    isNaN(Number(correct)) ||
+    isNaN(Number(total))
+  ) {
+    return null;
+  }
+  const rawScore = 200 + 600 * (Number(correct) / Number(total));
+  return Math.min(800, Math.max(200, Math.round(rawScore)));
+}
+
+/**
+ * Returns the effective domain score: uses domain.score if present,
+ * or calculates from 200 + 600 * (Correct / Total) when omitted.
+ */
+export function getEffectiveDomainScore(
+  domainData: { score?: number | null; correct?: number | null; total?: number | null } | undefined | null
+): number | null {
+  if (!domainData) return null;
+  if (typeof domainData.score === 'number' && !isNaN(domainData.score)) {
+    return domainData.score;
+  }
+  if (domainData.correct != null && domainData.total != null && domainData.total > 0) {
+    return calculateDomainScore(domainData.correct, domainData.total);
+  }
+  return null;
+}
+
+/**
+ * Returns the effective domain accuracy percentage: uses domain.pct if present,
+ * or calculates Math.round((correct / total) * 100) if omitted.
+ */
+export function getEffectiveDomainPct(
+  domainData: { pct?: number | null; correct?: number | null; total?: number | null } | undefined | null
+): number | null {
+  if (!domainData) return null;
+  if (typeof domainData.pct === 'number' && !isNaN(domainData.pct)) {
+    return domainData.pct;
+  }
+  if (domainData.correct != null && domainData.total != null && domainData.total > 0) {
+    return Math.round((Number(domainData.correct) / Number(domainData.total)) * 100);
+  }
+  return null;
+}

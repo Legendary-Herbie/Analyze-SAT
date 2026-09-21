@@ -1,10 +1,37 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { SATTest, DomainTrend } from '../types/sat';
-import { DOMAIN_META } from '../constants/domains';
+import { DOMAIN_META, calculateDomainScore, getEffectiveDomainScore, getEffectiveDomainPct } from '../constants/domains';
 import { SAMPLE_TESTS } from '../constants/sampleData';
 
 const STORAGE_KEY = 'satTrackerTestsV3';
 const TARGET_KEY = 'satTrackerTargetScore';
+
+/**
+ * Normalizes test domain entries by calculating score and accuracy % when omitted.
+ * Uses Digital SAT formula: Domain Score = 200 + 600 * (Correct / Total)
+ */
+export function normalizeTestDomains(test: SATTest): SATTest {
+  if (!test.domains) return test;
+  let modified = false;
+  const newDomains: SATTest['domains'] = {};
+  for (const [id, d] of Object.entries(test.domains)) {
+    if (!d) continue;
+    let score = d.score;
+    let pct = d.pct;
+    // Calculate domain score when omitted: Domain Score = 200 + 600 * (Correct / Total)
+    if (score == null && d.correct != null && d.total != null && Number(d.total) > 0) {
+      score = calculateDomainScore(d.correct, d.total);
+      modified = true;
+    }
+    // Calculate pct when omitted
+    if (pct == null && d.correct != null && d.total != null && Number(d.total) > 0) {
+      pct = Math.round((Number(d.correct) / Number(d.total)) * 100);
+      modified = true;
+    }
+    newDomains[id] = { ...d, score, pct };
+  }
+  return modified ? { ...test, domains: newDomains } : test;
+}
 
 interface SATContextType {
   tests: SATTest[];
@@ -47,7 +74,7 @@ export const SATProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (saved !== null) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          return parsed;
+          return parsed.map(normalizeTestDomains);
         }
       }
     } catch (e) {
@@ -139,15 +166,15 @@ export const SATProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const domainTrends = useMemo<DomainTrend[]>(() => {
     return DOMAIN_META.map(domain => {
       const scoresHistory = orderedTests
-        .map(t => t.domains?.[domain.id]?.score)
+        .map(t => getEffectiveDomainScore(t.domains?.[domain.id]))
         .filter((s): s is number => typeof s === 'number' && !isNaN(s));
 
       const pctHistory = orderedTests
-        .map(t => t.domains?.[domain.id]?.pct)
+        .map(t => getEffectiveDomainPct(t.domains?.[domain.id]))
         .filter((p): p is number => typeof p === 'number' && !isNaN(p));
 
-      const latestScore = latestTest?.domains?.[domain.id]?.score ?? null;
-      const latestPct = latestTest?.domains?.[domain.id]?.pct ?? null;
+      const latestScore = getEffectiveDomainScore(latestTest?.domains?.[domain.id]);
+      const latestPct = getEffectiveDomainPct(latestTest?.domains?.[domain.id]);
 
       const averageScore = scoresHistory.length > 0
         ? Math.round(scoresHistory.reduce((a, b) => a + b, 0) / scoresHistory.length)
@@ -175,16 +202,16 @@ export const SATProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [orderedTests, latestTest]);
 
   const addTest = (testData: Omit<SATTest, 'id'>) => {
-    const newTest: SATTest = {
+    const newTest: SATTest = normalizeTestDomains({
       ...testData,
       id: crypto.randomUUID(),
       createdAt: Date.now()
-    };
+    });
     setTests(prev => [...prev, newTest]);
   };
 
   const updateTest = (id: string, testData: Partial<SATTest>) => {
-    setTests(prev => prev.map(t => t.id === id ? { ...t, ...testData } : t));
+    setTests(prev => prev.map(t => (t.id === id ? normalizeTestDomains({ ...t, ...testData }) : t)));
   };
 
   const deleteTest = (id: string) => {
@@ -192,7 +219,7 @@ export const SATProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const resetToSample = () => {
-    setTests(SAMPLE_TESTS);
+    setTests(SAMPLE_TESTS.map(normalizeTestDomains));
   };
 
   const clearAllTests = () => {
@@ -213,20 +240,22 @@ export const SATProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       if (isNaN(total) || isNaN(rw) || isNaN(math)) continue;
 
-      validated.push({
-        id: item.id || crypto.randomUUID(),
-        name: item.name || 'Practice Test',
-        date: item.date || '',
-        source: item.source || 'Other',
-        total,
-        rw,
-        math,
-        notes: item.notes || '',
-        moduleRouting: item.moduleRouting,
-        mistakes: item.mistakes,
-        domains: item.domains || {},
-        createdAt: item.createdAt || Date.now()
-      });
+      validated.push(
+        normalizeTestDomains({
+          id: item.id || crypto.randomUUID(),
+          name: item.name || 'Practice Test',
+          date: item.date || '',
+          source: item.source || 'Other',
+          total,
+          rw,
+          math,
+          notes: item.notes || '',
+          moduleRouting: item.moduleRouting,
+          mistakes: item.mistakes,
+          domains: item.domains || {},
+          createdAt: item.createdAt || Date.now()
+        })
+      );
     }
 
     if (validated.length === 0) {
@@ -265,8 +294,8 @@ export const SATProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     ];
 
     const rows = orderedTests.map(t => {
-      const domainScores = DOMAIN_META.map(d => t.domains?.[d.id]?.score ?? '');
-      const domainPcts = DOMAIN_META.map(d => t.domains?.[d.id]?.pct ?? '');
+      const domainScores = DOMAIN_META.map(d => getEffectiveDomainScore(t.domains?.[d.id]) ?? '');
+      const domainPcts = DOMAIN_META.map(d => getEffectiveDomainPct(t.domains?.[d.id]) ?? '');
       return [
         `"${t.name.replace(/"/g, '""')}"`,
         `"${t.date}"`,

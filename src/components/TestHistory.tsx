@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useSAT } from '../context/SATContext';
 import { SATTest } from '../types/sat';
-import { DOMAIN_META } from '../constants/domains';
+import { DOMAIN_META, getEffectiveDomainScore, getEffectiveDomainPct } from '../constants/domains';
 import { ConfirmDialog } from './ConfirmDialog';
 
 function TestRow({
@@ -46,7 +46,9 @@ function TestRow({
   const [quickRw, setQuickRw] = useState(String(test.rw));
   const [quickMath, setQuickMath] = useState(String(test.math));
 
-  const hasDomains = Object.values(test.domains || {}).some(d => d?.score != null || d?.pct != null);
+  const hasDomains = Object.values(test.domains || {}).some(
+    d => getEffectiveDomainScore(d) != null || getEffectiveDomainPct(d) != null
+  );
   const hasMistakes = Boolean(test.mistakes && test.mistakes.length > 0);
 
   const dateStr = test.date
@@ -293,21 +295,29 @@ function TestRow({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {DOMAIN_META.map(d => {
                 const v = test.domains?.[d.id];
-                if (!v || (v.score == null && v.pct == null)) return null;
+                const score = getEffectiveDomainScore(v);
+                const pct = getEffectiveDomainPct(v);
+                if (score == null && pct == null) return null;
+                const isCalculated = v?.score == null && score != null;
                 return (
                   <div key={d.id} className="bg-white dark:bg-slate-800 border border-[#e5e9f0] dark:border-slate-700 rounded-lg p-2">
                     <div className="text-[9px] font-extrabold uppercase tracking-wider text-[#6f7b90] dark:text-slate-400 truncate">
                       {d.name}
                     </div>
                     <div className="flex items-baseline gap-1.5 mt-1">
-                      {v.score != null && (
-                        <span className="text-base font-black text-[#182235] dark:text-white">{v.score}</span>
+                      {score != null && (
+                        <span
+                          className="text-base font-black text-[#182235] dark:text-white"
+                          title={isCalculated ? 'Calculated via 200 + 600 × (Correct/Total)' : undefined}
+                        >
+                          {score}
+                        </span>
                       )}
-                      {v.pct != null && (
-                        <span className="text-xs text-[#6f7b90] dark:text-slate-400">{v.pct}%</span>
+                      {pct != null && (
+                        <span className="text-xs text-[#6f7b90] dark:text-slate-400">{pct}%</span>
                       )}
                     </div>
-                    {v.correct != null && v.total != null && (
+                    {v?.correct != null && v?.total != null && (
                       <div className="text-[10px] text-[#6f7b90] dark:text-slate-400 mt-0.5">
                         {v.correct}/{v.total} correct
                       </div>

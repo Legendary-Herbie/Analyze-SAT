@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useSAT } from '../context/SATContext';
 import { SATTest } from '../types/sat';
-import { DOMAIN_META } from '../constants/domains';
+import { DOMAIN_META, getEffectiveDomainScore, getEffectiveDomainPct } from '../constants/domains';
 
 interface CompareTestsModalProps {
   isOpen: boolean;
@@ -637,10 +637,10 @@ export const CompareTestsModal: React.FC<CompareTestsModalProps> = ({
                       const dataA = testA.domains?.[d.id];
                       const dataB = testB.domains?.[d.id];
 
-                      const scoreA = dataA?.score;
-                      const scoreB = dataB?.score;
-                      const pctA = dataA?.pct;
-                      const pctB = dataB?.pct;
+                      const scoreA = getEffectiveDomainScore(dataA);
+                      const scoreB = getEffectiveDomainScore(dataB);
+                      const pctA = getEffectiveDomainPct(dataA);
+                      const pctB = getEffectiveDomainPct(dataB);
 
                       const hasData = scoreA != null || scoreB != null || pctA != null || pctB != null;
                       const deltaScore = scoreA != null && scoreB != null ? scoreB - scoreA : null;
